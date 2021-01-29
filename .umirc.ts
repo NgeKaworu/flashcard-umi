@@ -1,4 +1,5 @@
 import { defineConfig } from 'umi';
+import theme from './src/theme'
 
 export default defineConfig({
   qiankun: {
@@ -8,6 +9,7 @@ export default defineConfig({
   nodeModulesTransform: {
     type: 'none',
   },
+  theme,
   routes: [
     {
       path: '/',

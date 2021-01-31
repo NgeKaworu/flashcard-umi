@@ -1,7 +1,5 @@
 import { message } from 'antd';
 
-import * as proxy from './proxy';
-
 import axios from 'axios';
 
 import type { AxiosRequestConfig, AxiosResponse, Method } from 'axios';
@@ -25,8 +23,6 @@ interface BizOptions extends AxiosRequestConfig {
   silence?: Silence;
   // 是否重新登录
   reAuth?: boolean;
-  // 是否走代理
-  coressPorxy?: boolean;
 }
 
 // 状态码对映的消息
@@ -61,12 +57,8 @@ function request(url: string, options: BizOptions = {}) {
     silence = false,
     reAuth = false,
     headers,
-    coressPorxy = true,
     ...restOptions
   } = options;
-
-  // 多host多端下的url分发机制
-  const proxyUrl = coressPorxy ? proxy.default(url, proxy.config) : url;
 
   // 主要业务处理
   function bizHandler(response: AxiosResponse) {
@@ -143,7 +135,7 @@ function request(url: string, options: BizOptions = {}) {
   }
 
   return (
-    axios(proxyUrl, {
+    axios(url, {
       timeout: 10000,
       headers: {
         Authorization: `${localStorage.getItem('token')}`,

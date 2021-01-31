@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
+import { useInfiniteQuery, useQueryClient } from 'react-query';
 
 import { Input, Layout, Button, Menu, Space, Modal, Form, Radio } from 'antd';
 
@@ -8,7 +10,6 @@ import styled from 'styled-components';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { SelectInfo } from 'rc-menu/lib/interface';
-import { useHistory } from 'react-router';
 
 const RecordHeader = styled(Header)`
   background: white;
@@ -44,6 +45,26 @@ export default () => {
     const params = new URLSearchParams(_location.search);
     sortForm.setFieldsValue(Object.fromEntries(params.entries()));
   }, [_location.search]);
+
+  const queryClient = useQueryClient();
+
+  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery(
+    'records',
+    ({ pageParam = 0 }) => {
+      return RESTful.get('/main/v1/record/list', {
+        silence: 'success',
+        params: {
+          skip: pageParam * 10,
+          limit: 10,
+        },
+      });
+    },
+    {
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage?.data?.length === 10 ? pages?.length : undefined;
+      },
+    },
+  );
 
   function onMenuSelect({ key }: SelectInfo) {
     const params = new URLSearchParams(_location?.search);

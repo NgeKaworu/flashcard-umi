@@ -17,8 +17,6 @@ class BizError extends Error {
 type Silence = true | false | 'success' | 'fail';
 
 interface BizOptions extends AxiosRequestConfig {
-  // 是否捕获错误
-  errCatch?: boolean;
   // 是否通知
   silence?: Silence;
   // 是否重新登录
@@ -52,13 +50,7 @@ const codeMessage: { [key: number]: string } = {
  */
 
 function request(url: string, options: BizOptions = {}) {
-  const {
-    errCatch = false,
-    silence = false,
-    reAuth = false,
-    headers,
-    ...restOptions
-  } = options;
+  const { silence = false, reAuth = false, headers, ...restOptions } = options;
 
   // 主要业务处理
   function bizHandler(response: AxiosResponse) {
@@ -112,10 +104,6 @@ function request(url: string, options: BizOptions = {}) {
           codeMessage[response?.status as number] ||
           '未知错误',
       });
-    }
-    // 阻止throw
-    if (errCatch) {
-      return response;
     }
 
     throw error;

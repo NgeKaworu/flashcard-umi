@@ -11,6 +11,9 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { SelectInfo } from 'rc-menu/lib/interface';
 
+import { RESTful } from '@/http';
+import { mainHost } from '@/http/host';
+
 const RecordHeader = styled(Header)`
   background: white;
   box-shadow: 0px 1px 20px 5px rgb(0 0 0 / 5%);
@@ -31,40 +34,54 @@ const RecordFooter = styled(Footer)`
 
 type dictType = '' | '新建' | '编辑';
 
+const limit = 10;
+
 export default () => {
   const [sortForm] = Form.useForm();
   const [dictForm] = Form.useForm();
   const history = useHistory();
   const _location = history.location;
+  const _search = _location.search;
 
   const [sortVisable, setSortVisable] = useState(false);
   const [dictVisable, setDictVisable] = useState(false);
   const [dictType, setDictType] = useState<dictType>('新建');
 
   useEffect(() => {
-    const params = new URLSearchParams(_location.search);
+    const params = new URLSearchParams(_search);
     sortForm.setFieldsValue(Object.fromEntries(params.entries()));
-  }, [_location.search]);
+  }, [_search]);
 
   const queryClient = useQueryClient();
 
   const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery(
-    'records',
+    ['records', _search],
     ({ pageParam = 0 }) => {
-      return RESTful.get('/main/v1/record/list', {
+      const params: { [key: string]: string | number } = Object.fromEntries(
+        new URLSearchParams(_search),
+      );
+
+      return RESTful.get(`${mainHost()}/record/list`, {
         silence: 'success',
         params: {
+          ...params,
           skip: pageParam * 10,
-          limit: 10,
+          limit,
         },
       });
     },
     {
       getNextPageParam: (lastPage, pages) => {
-        return lastPage?.data?.length === 10 ? pages?.length : undefined;
+        return lastPage?.data?.length === limit ? pages?.length : undefined;
       },
     },
   );
+
+  const datas = data?.pages,
+    pages = datas?.map((i) => i?.data),
+    total = datas?.[datas?.length - 1]?.total || 0;
+
+  console.log(pages, total);
 
   function onMenuSelect({ key }: SelectInfo) {
     const params = new URLSearchParams(_location?.search);

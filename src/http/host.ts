@@ -1,8 +1,8 @@
 export const mainHost = () => {
   switch (process.env.NODE_ENV) {
     case 'production':
-      return 'https://api.furan.xyz/time-mgt';
+      return 'https://api.furan.xyz/flashcard';
     default:
-      return 'http://localhost:8001';
+      return 'http://localhost:8021';
   }
 };

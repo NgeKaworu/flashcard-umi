@@ -14,6 +14,10 @@ import { SelectInfo } from 'rc-menu/lib/interface';
 import { RESTful } from '@/http';
 import { mainHost } from '@/http/host';
 
+import RecordItem from './components/RecordItem';
+
+import { Record } from '@/models/record';
+
 const RecordHeader = styled(Header)`
   background: white;
   box-shadow: 0px 1px 20px 5px rgb(0 0 0 / 5%);
@@ -38,7 +42,7 @@ const limit = 10;
 
 export default () => {
   const [sortForm] = Form.useForm();
-  const [dictForm] = Form.useForm();
+  const [inputForm] = Form.useForm();
   const history = useHistory();
   const _location = history.location;
   const _search = _location.search;
@@ -46,6 +50,7 @@ export default () => {
   const [sortVisable, setSortVisable] = useState(false);
   const [dictVisable, setDictVisable] = useState(false);
   const [dictType, setDictType] = useState<dictType>('新建');
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   useEffect(() => {
     const params = new URLSearchParams(_search);
@@ -78,7 +83,7 @@ export default () => {
   );
 
   const datas = data?.pages,
-    pages = datas?.map((i) => i?.data),
+    pages = datas?.reduce((acc, cur) => acc.concat(cur?.data), []),
     total = datas?.[datas?.length - 1]?.total || 0;
 
   console.log(pages, total);
@@ -129,43 +134,40 @@ export default () => {
     setSortVisable(false);
   }
 
-  function showDictModal(e: React.MouseEvent<HTMLElement, MouseEvent>) {
+  function showInpurModal(e: React.MouseEvent<HTMLElement, MouseEvent>) {
     console.log(e.currentTarget.dataset);
     setDictType(e.currentTarget.dataset.dictType as dictType);
     setDictVisable(true);
   }
 
-  function hideDictModal() {
+  function hideInputModal() {
     setDictVisable(false);
   }
 
-  function onDictSubmit() {
-    dictForm.validateFields().then((values) => {
+  function onInputSubmit() {
+    inputForm.validateFields().then((values) => {
       console.log(values);
     });
   }
-  // const { isLoading, data: res } = useQuery(
-  //   ['user-list', _location?.search],
-  //   () => {
-  //     const {
-  //       page,
-  //       ...params
-  //     }: { [key: string]: string | Number } = Object.fromEntries(
-  //       new URLSearchParams(_location?.search),
-  //     );
 
-  //     const limit = +params?.limit || 10;
-  //     const skip = (+page - 1) * limit || 0;
+  function onItemClick(id: string) {
+    setSelectedItems((s) => {
+      const checked = s.some((i) => i === id);
+      return checked ? s.filter((i) => i !== id) : s.concat(id);
+    });
+  }
 
-  //     return http.RESTful.get('/main/user/list', {
-  //       params: {
-  //         skip,
-  //         ...params,
-  //       },
-  //       silence: 'success',
-  //     });
-  //   },
-  // );
+  function onItemRemoveClick(id: string) {
+    console.log(id);
+  }
+
+  function onItemEditClick(record: Record) {
+    console.log(record);
+  }
+
+  function cancelAllSelect() {
+    setSelectedItems([]);
+  }
 
   return (
     <Layout style={{ height: '100%' }}>
@@ -225,11 +227,27 @@ export default () => {
           </Form>
         </Modal>
       </RecordHeader>
-      <Content>content</Content>
+      <Content style={{ overflowY: 'auto' }}>
+        {pages?.map((record: Record) => {
+          const selected = selectedItems.some((s) => s === record?._id);
+          return (
+            <RecordItem
+              key={record._id}
+              record={record}
+              selected={selected}
+              onClick={onItemClick}
+              onEditClick={onItemEditClick}
+              onRemoveClick={onItemRemoveClick}
+            />
+          );
+        })}
+      </Content>
       <RecordFooter>
         <Space style={{ marginRight: '12px' }}>
-          1/1000
-          <Button type="dashed">取消选择</Button>
+          {selectedItems.length}/{total}
+          <Button type="dashed" onClick={cancelAllSelect}>
+            取消选择
+          </Button>
           {/* <Button danger>删除所选</Button> */}
         </Space>
         <Space>
@@ -239,7 +257,7 @@ export default () => {
             type="primary"
             shape="circle"
             icon={<PlusOutlined />}
-            onClick={showDictModal}
+            onClick={showInpurModal}
             data-dict-type="新建"
           />
         </Space>
@@ -247,10 +265,10 @@ export default () => {
       <Modal
         title={dictType}
         visible={dictVisable}
-        onCancel={hideDictModal}
-        onOk={onDictSubmit}
+        onCancel={hideInputModal}
+        onOk={onInputSubmit}
       >
-        <Form form={dictForm} onFinish={onDictSubmit}>
+        <Form form={inputForm} onFinish={onInputSubmit}>
           <Form.Item name="source" label="原文" rules={[{ required: true }]}>
             <Input.TextArea autoSize allowClear />
           </Form.Item>

@@ -192,7 +192,7 @@ export default () => {
         <Space style={{ marginRight: '12px' }}>
           1/1000
           <Button type="dashed">取消选择</Button>
-          <Button danger>删除所选</Button>
+          {/* <Button danger>删除所选</Button> */}
         </Space>
         <Space>
           <Button type="primary">复习所选</Button>

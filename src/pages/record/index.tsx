@@ -1,13 +1,23 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useHistory } from 'react-router';
-import { useInfiniteQuery, useQueryClient } from 'react-query';
+import { useInfiniteQuery, useQueryClient, useMutation } from 'react-query';
 import {
   VariableSizeList as List,
   ListOnItemsRenderedProps,
 } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 
-import { Input, Layout, Button, Menu, Space, Modal, Form, Radio } from 'antd';
+import {
+  Empty,
+  Input,
+  Layout,
+  Button,
+  Menu,
+  Space,
+  Modal,
+  Form,
+  Radio,
+} from 'antd';
 
 const { Header, Content, Footer } = Layout;
 
@@ -41,7 +51,14 @@ const RecordFooter = styled(Footer)`
   padding: 12px 8px;
 `;
 
-type dictType = '' | '新建' | '编辑';
+const CenterEmpty = styled(Empty)`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+type inputType = '' | '新建' | '编辑';
 type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
 
 const limit = 10;
@@ -56,12 +73,15 @@ export default () => {
   const selectedKeys = [params.get('type') || 'all'];
 
   const [sortVisable, setSortVisable] = useState(false);
-  const [dictVisable, setDictVisable] = useState(false);
-  const [dictType, setDictType] = useState<dictType>('新建');
+  const [inputVisable, setInputVisable] = useState(false);
+  const [inputType, setInputType] = useState<inputType>('新建');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentRect, setContentRec] = useState<DOMRect>();
+
+  // 编辑modal使用
+  const [curRecrod, setCurRecord] = useState<Record>();
 
   useLayoutEffect(() => {
     const current = contentRef.current;
@@ -77,7 +97,7 @@ export default () => {
   const queryClient = useQueryClient();
 
   const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery(
-    ['records', _search],
+    ['records-list', _search],
     ({ pageParam = 0 }) => {
       const params: { [key: string]: string | number } = Object.fromEntries(
         new URLSearchParams(_search),
@@ -99,11 +119,43 @@ export default () => {
     },
   );
 
+  const creator = useMutation(
+    (data) => RESTful.post(`${mainHost()}/record/create`, { data }),
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('records-list');
+        inputForm.resetFields();
+        setInputVisable(false);
+      },
+    },
+  );
+
+  const updater = useMutation(
+    (data?: { [key: string]: any }) =>
+      RESTful.put(`${mainHost()}/record/update`, {
+        data: { id: curRecrod?._id, ...data },
+      }),
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('records-list');
+        inputForm.resetFields();
+        setInputVisable(false);
+      },
+    },
+  );
+
+  const deleter = useMutation(
+    (data?: string) => RESTful.delete(`${mainHost()}/record/remove/${data}`),
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('records-list');
+      },
+    },
+  );
+
   const datas = data?.pages,
     pages = datas?.reduce((acc, cur) => acc.concat(cur?.data), []),
     total = datas?.[datas?.length - 1]?.total || 0;
-
-  console.log(pages, total);
 
   function onMenuSelect({ key }: SelectInfo) {
     if (key !== 'all') {
@@ -149,18 +201,26 @@ export default () => {
   }
 
   function showInpurModal(e: React.MouseEvent<HTMLElement, MouseEvent>) {
-    console.log(e.currentTarget.dataset);
-    setDictType(e.currentTarget.dataset.dictType as dictType);
-    setDictVisable(true);
+    setInputType(e.currentTarget.dataset.inputType as inputType);
+    setInputVisable(true);
   }
 
   function hideInputModal() {
-    setDictVisable(false);
+    setInputVisable(false);
   }
 
   function onInputSubmit() {
     inputForm.validateFields().then((values) => {
-      console.log(values);
+      switch (inputType) {
+        case '新建':
+          creator.mutate(values);
+          break;
+        case '编辑':
+          updater.mutate(values);
+          break;
+        default:
+          console.error('invalidate type:', inputType);
+      }
     });
   }
 
@@ -172,11 +232,14 @@ export default () => {
   }
 
   function onItemRemoveClick(id: string) {
-    console.log(id);
+    deleter.mutate(id);
   }
 
   function onItemEditClick(record: Record) {
-    console.log(record);
+    inputForm.setFieldsValue(record);
+    setCurRecord(record);
+    setInputType('编辑');
+    setInputVisable(true);
   }
 
   function cancelAllSelect() {
@@ -236,6 +299,7 @@ export default () => {
   }) {
     return (
       <List
+        style={{ paddingBottom: '12px' }}
         height={contentRect?.height || 0}
         width={'100%'}
         itemCount={total}
@@ -250,15 +314,12 @@ export default () => {
 
   function calcItemSize(index: number) {
     const record = pages[index];
+    console.log(index, record);
     const width = contentRect?.width || 0;
     const lineHeight = 22;
     // 基本高度 = Item高度 - 两行文本内容 + padding
     let baseHeight = 125 - lineHeight * 2 + 12;
 
-    if (index === total - 1) {
-      // 最后一个再加12padding
-      baseHeight += 12;
-    }
     // 基本宽度 = 屏幕宽度 - padding*2 - margin*2
     const baseWidth = width - 12 * 2 - 12 * 2;
     // 字号
@@ -270,17 +331,15 @@ export default () => {
 
     // 总行数
     const rowNums = Math.ceil(sl / baseWidth) + Math.ceil(tl / baseWidth);
-    console.log(
-      baseWidth,
-      sl,
-      tl,
-      baseHeight,
-      rowNums * lineHeight + baseHeight,
-    );
 
-    // 0.618为系数，全角字符是14px半角则是一半；
-    const rowHeight = rowNums * lineHeight + baseHeight;
-    return rowNums > 2 ? rowHeight * 0.75 : rowHeight;
+    let rowHeight = rowNums * lineHeight + baseHeight;
+
+    // 0.75为系数，全角字符是14px半角则是一半；
+    if (rowNums > 2) {
+      rowHeight *= 0.75;
+    }
+
+    return rowHeight;
   }
 
   return (
@@ -303,7 +362,6 @@ export default () => {
         <Modal
           visible={sortVisable}
           title="排序"
-          closable
           onCancel={hideSortModal}
           onOk={onSortSubmit}
         >
@@ -344,13 +402,17 @@ export default () => {
       </RecordHeader>
       <Content>
         <div style={{ width: '100%', height: '100%' }} ref={contentRef}>
-          <InfiniteLoader
-            isItemLoaded={isItemLoaded}
-            itemCount={total}
-            loadMoreItems={loadMoreItems}
-          >
-            {renderList}
-          </InfiniteLoader>
+          {pages?.length ? (
+            <InfiniteLoader
+              isItemLoaded={isItemLoaded}
+              itemCount={total}
+              loadMoreItems={loadMoreItems}
+            >
+              {renderList}
+            </InfiniteLoader>
+          ) : (
+            <CenterEmpty />
+          )}
         </div>
       </Content>
       <RecordFooter>
@@ -369,13 +431,13 @@ export default () => {
             shape="circle"
             icon={<PlusOutlined />}
             onClick={showInpurModal}
-            data-dict-type="新建"
+            data-input-type="新建"
           />
         </Space>
       </RecordFooter>
       <Modal
-        title={dictType}
-        visible={dictVisable}
+        title={inputType}
+        visible={inputVisable}
         onCancel={hideInputModal}
         onOk={onInputSubmit}
       >

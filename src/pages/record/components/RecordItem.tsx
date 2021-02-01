@@ -27,6 +27,7 @@ const RecordCard = styled.div<RecordCardProps>`
   padding-top: 20px;
   position: relative;
   height: calc(100% - 12px);
+  overflow-wrap: break-word;
   /* 进度条 */
   ::before {
     content: ' ';

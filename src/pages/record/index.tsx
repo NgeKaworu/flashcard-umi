@@ -46,6 +46,8 @@ export default () => {
   const history = useHistory();
   const _location = history.location;
   const _search = _location.search;
+  const params = new URLSearchParams(_search);
+  const selectedKeys = [params.get('type') || 'all'];
 
   const [sortVisable, setSortVisable] = useState(false);
   const [dictVisable, setDictVisable] = useState(false);
@@ -89,7 +91,6 @@ export default () => {
   console.log(pages, total);
 
   function onMenuSelect({ key }: SelectInfo) {
-    const params = new URLSearchParams(_location?.search);
     if (key !== 'all') {
       params.set('type', `${key}`);
     } else {
@@ -111,7 +112,6 @@ export default () => {
 
   function onSortSubmit() {
     sortForm.validateFields().then(({ sort, orderby }) => {
-      const params = new URLSearchParams(_location?.search);
       params.set('sort', sort);
       params.set('orderby', orderby);
       history.push({
@@ -123,7 +123,6 @@ export default () => {
   }
 
   function onSortCancel() {
-    const params = new URLSearchParams(_location?.search);
     params.delete('sort');
     params.delete('orderby');
     history.push({
@@ -176,6 +175,7 @@ export default () => {
           mode="horizontal"
           style={{ margin: '0 auto' }}
           onSelect={onMenuSelect}
+          selectedKeys={selectedKeys}
         >
           <Menu.Item key="enabled">可复习</Menu.Item>
           <Menu.Item key="cooling">冷却中</Menu.Item>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import { Divider, Popconfirm, Button } from 'antd';
@@ -6,6 +6,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import theme from '@/theme';
 import { Record } from '@/models/record';
+import { ChatContext } from '..';
 
 export interface RecordItemProps {
   onClick: (id: string) => void;
@@ -26,7 +27,7 @@ const RecordCard = styled.div<RecordCardProps>`
   padding: 12px;
   padding-top: 20px;
   position: relative;
-  height: calc(100% - 12px);
+  /* height: calc(100% - 12px); */
   overflow-wrap: break-word;
   /* 进度条 */
   ::before {
@@ -64,10 +65,16 @@ const RecordCard = styled.div<RecordCardProps>`
 export default ({
   onClick,
   onRemoveClick,
-  onEditClick,
+  onEditClick
   selected,
   record,
 }: RecordItemProps) => {
+  const { setSize } = React.useContext(ChatContext);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setSize(record._id, ref.current?.getBoundingClientRect().height);
+  }, [record]);
+
   const { _id, source, translation, exp: percent } = record;
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.stopPropagation();
@@ -89,11 +96,14 @@ export default ({
   }
 
   return (
-    <RecordCard selected={selected} percent={percent} onClick={clickHandler}>
-      {/* <div style={{ overflowWrap: 'break-word' }}>{source}</div> */}
+    <RecordCard
+      selected={selected}
+      percent={percent}
+      onClick={clickHandler}
+      ref={ref}
+    >
       <span>{source}</span>
       <Divider />
-      {/* <div style={{ overflowWrap: 'break-word' }}>{translation}</div> */}
       <span>{translation}</span>
       <div className="tools-bar">
         <Button

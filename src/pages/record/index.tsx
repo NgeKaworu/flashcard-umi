@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useCallback,
+  createContext,
+} from 'react';
 import { useHistory } from 'react-router';
 import { useInfiniteQuery, useQueryClient, useMutation } from 'react-query';
 import {
@@ -63,6 +70,8 @@ type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
 
 const limit = 10;
 
+export const ChatContext = createContext({});
+
 export default () => {
   const [sortForm] = Form.useForm();
   const [inputForm] = Form.useForm();
@@ -119,6 +128,22 @@ export default () => {
     },
   );
 
+  const datas = data?.pages,
+    pages = datas?.reduce((acc, cur) => acc.concat(cur?.data), []),
+    total = datas?.[datas?.length - 1]?.total || 0;
+
+  const sizeMap = useRef<{ [key: string]: number }>({});
+  const setSize = useCallback((id, size) => {
+    console.log('set');
+    sizeMap.current = { ...sizeMap.current, [id]: size };
+  }, []);
+
+  const getSize = useCallback((index) => {
+    const id = pages?.[index]._id;
+    console.log('get');
+    return sizeMap.current[id] || 50;
+  }, []);
+
   const creator = useMutation(
     (data) => RESTful.post(`${mainHost()}/record/create`, { data }),
     {
@@ -152,10 +177,6 @@ export default () => {
       },
     },
   );
-
-  const datas = data?.pages,
-    pages = datas?.reduce((acc, cur) => acc.concat(cur?.data), []),
-    total = datas?.[datas?.length - 1]?.total || 0;
 
   function onMenuSelect({ key }: SelectInfo) {
     if (key !== 'all') {
@@ -259,6 +280,8 @@ export default () => {
   // const isItemLoaded = index => !hasNextPage || index < pages.length;
   const isItemLoaded = (index: number) => !hasNextPage || index < pages?.length;
 
+  const getItemKey = (index: number, data: Record[]) => data?.[index]?._id;
+
   // Render an item or a loading indicator.
   function renderItem({
     index,
@@ -298,17 +321,21 @@ export default () => {
     ref: React.Ref<any>;
   }) {
     return (
-      <List
-        style={{ paddingBottom: '12px' }}
-        height={contentRect?.height || 0}
-        width={'100%'}
-        itemCount={total}
-        onItemsRendered={onItemsRendered}
-        ref={ref}
-        itemSize={calcItemSize}
-      >
-        {renderItem}
-      </List>
+      <ChatContext.Provider value={{ setSize }}>
+        <List
+          style={{ paddingBottom: '12px' }}
+          height={contentRect?.height || 0}
+          width={'100%'}
+          itemCount={total}
+          onItemsRendered={onItemsRendered}
+          ref={ref}
+          itemSize={getSize}
+          // itemData={pages}
+          // itemKey={getItemKey}
+        >
+          {renderItem}
+        </List>
+      </ChatContext.Provider>
     );
   }
 

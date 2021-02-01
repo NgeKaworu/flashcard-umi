@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import { Divider, Popconfirm, Button } from 'antd';
@@ -68,13 +68,6 @@ export default ({
   selected,
   record,
 }: RecordItemProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    const rect = ref?.current?.getBoundingClientRect();
-    console.log(rect, record);
-  }, [record, ref]);
-
   const { _id, source, translation, exp: percent } = record;
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.stopPropagation();
@@ -96,12 +89,7 @@ export default ({
   }
 
   return (
-    <RecordCard
-      ref={ref}
-      selected={selected}
-      percent={percent}
-      onClick={clickHandler}
-    >
+    <RecordCard selected={selected} percent={percent} onClick={clickHandler}>
       {/* <div style={{ overflowWrap: 'break-word' }}>{source}</div> */}
       <span>{source}</span>
       <Divider />

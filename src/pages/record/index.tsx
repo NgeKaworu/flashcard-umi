@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useHistory } from 'react-router';
 import { useInfiniteQuery, useQueryClient } from 'react-query';
-import { VariableSizeList as List } from 'react-window';
+import {
+  VariableSizeList as List,
+  ListOnItemsRenderedProps,
+} from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 
 import { Input, Layout, Button, Menu, Space, Modal, Form, Radio } from 'antd';
@@ -39,6 +42,7 @@ const RecordFooter = styled(Footer)`
 `;
 
 type dictType = '' | '新建' | '编辑';
+type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
 
 const limit = 10;
 
@@ -55,6 +59,15 @@ export default () => {
   const [dictVisable, setDictVisable] = useState(false);
   const [dictType, setDictType] = useState<dictType>('新建');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentRect, setContentRec] = useState<DOMRect>();
+
+  useLayoutEffect(() => {
+    const current = contentRef.current;
+    const obj = current?.getBoundingClientRect();
+    obj && setContentRec(obj);
+  }, [contentRef]);
 
   useEffect(() => {
     const params = new URLSearchParams(_search);
@@ -170,8 +183,8 @@ export default () => {
     setSelectedItems([]);
   }
 
-  // const length = pages?.length || 0;
   // react-window-infinite
+  // const length = pages?.length || 0;
   // If there are more items to be loaded then add an extra row to hold a loading indicator.
   // const itemCount = hasNextPage ? length + 1 : length;
 
@@ -184,22 +197,91 @@ export default () => {
   const isItemLoaded = (index: number) => !hasNextPage || index < pages?.length;
 
   // Render an item or a loading indicator.
-  const Item = ({
+  function renderItem({
     index,
     style,
   }: {
     index: number;
     style: React.CSSProperties;
-  }) => {
+  }) {
+    const record = pages[index];
+    const selected = selectedItems.some((s) => s === record?._id);
+
     let content;
     if (!isItemLoaded(index)) {
       content = 'Loading...';
     } else {
-      content = pages[index]?.source;
+      content = (
+        <RecordItem
+          key={record._id}
+          record={record}
+          selected={selected}
+          onClick={onItemClick}
+          onEditClick={onItemEditClick}
+          onRemoveClick={onItemRemoveClick}
+        />
+      );
     }
 
     return <div style={style}>{content}</div>;
-  };
+  }
+
+  // Render List
+  function renderList({
+    onItemsRendered,
+    ref,
+  }: {
+    onItemsRendered: OnItemsRendered;
+    ref: React.Ref<any>;
+  }) {
+    return (
+      <List
+        height={contentRect?.height || 0}
+        width={'100%'}
+        itemCount={total}
+        onItemsRendered={onItemsRendered}
+        ref={ref}
+        itemSize={calcItemSize}
+      >
+        {renderItem}
+      </List>
+    );
+  }
+
+  function calcItemSize(index: number) {
+    const record = pages[index];
+    const width = contentRect?.width || 0;
+    const lineHeight = 22;
+    // 基本高度 = Item高度 - 两行文本内容 + padding
+    let baseHeight = 125 - lineHeight * 2 + 12;
+
+    if (index === total - 1) {
+      // 最后一个再加12padding
+      baseHeight += 12;
+    }
+    // 基本宽度 = 屏幕宽度 - padding*2 - margin*2
+    const baseWidth = width - 12 * 2 - 12 * 2;
+    // 字号
+    const fontSize = 14;
+    // 原文 长度
+    const sl = record?.source?.length * fontSize || 1;
+    //译文 长度
+    const tl = record?.translation?.length * fontSize || 1;
+
+    // 总行数
+    const rowNums = Math.ceil(sl / baseWidth) + Math.ceil(tl / baseWidth);
+    console.log(
+      baseWidth,
+      sl,
+      tl,
+      baseHeight,
+      rowNums * lineHeight + baseHeight,
+    );
+
+    // 0.618为系数，全角字符是14px半角则是一半；
+    const rowHeight = rowNums * lineHeight + baseHeight;
+    return rowNums > 2 ? rowHeight * 0.75 : rowHeight;
+  }
 
   return (
     <Layout style={{ height: '100%' }}>
@@ -260,38 +342,16 @@ export default () => {
           </Form>
         </Modal>
       </RecordHeader>
-      <Content style={{ overflowY: 'auto' }}>
-        <InfiniteLoader
-          isItemLoaded={isItemLoaded}
-          itemCount={total}
-          loadMoreItems={loadMoreItems}
-        >
-          {({ onItemsRendered, ref }) => (
-            <List
-              height={400}
-              width={'100%'}
-              itemCount={total}
-              onItemsRendered={onItemsRendered}
-              ref={ref}
-              itemSize={() => 200}
-            >
-              {Item}
-            </List>
-          )}
-        </InfiniteLoader>
-        {/* {pages?.map((record: Record) => {
-          const selected = selectedItems.some((s) => s === record?._id);
-          return (
-            <RecordItem
-              key={record._id}
-              record={record}
-              selected={selected}
-              onClick={onItemClick}
-              onEditClick={onItemEditClick}
-              onRemoveClick={onItemRemoveClick}
-            />
-          );
-        })} */}
+      <Content>
+        <div style={{ width: '100%', height: '100%' }} ref={contentRef}>
+          <InfiniteLoader
+            isItemLoaded={isItemLoaded}
+            itemCount={total}
+            loadMoreItems={loadMoreItems}
+          >
+            {renderList}
+          </InfiniteLoader>
+        </div>
       </Content>
       <RecordFooter>
         <Space style={{ marginRight: '12px' }}>

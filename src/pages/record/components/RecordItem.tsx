@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import { Divider, Popconfirm, Button } from 'antd';
@@ -6,7 +6,6 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import theme from '@/theme';
 import { Record } from '@/models/record';
-import { ChatContext } from '..';
 
 export interface RecordItemProps {
   onClick: (id: string) => void;
@@ -65,16 +64,10 @@ const RecordCard = styled.div<RecordCardProps>`
 export default ({
   onClick,
   onRemoveClick,
-  onEditClick
+  onEditClick,
   selected,
   record,
 }: RecordItemProps) => {
-  const { setSize } = React.useContext(ChatContext);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    setSize(record._id, ref.current?.getBoundingClientRect().height);
-  }, [record]);
-
   const { _id, source, translation, exp: percent } = record;
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.stopPropagation();
@@ -96,15 +89,10 @@ export default ({
   }
 
   return (
-    <RecordCard
-      selected={selected}
-      percent={percent}
-      onClick={clickHandler}
-      ref={ref}
-    >
-      <span>{source}</span>
+    <RecordCard selected={selected} percent={percent} onClick={clickHandler}>
+      <div style={{ height: '66px' }}>{source}</div>
       <Divider />
-      <span>{translation}</span>
+      <div style={{ height: '66px' }}>{translation}</div>
       <div className="tools-bar">
         <Button
           size="small"

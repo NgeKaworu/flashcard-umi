@@ -3,15 +3,10 @@ import React, {
   useEffect,
   useRef,
   useLayoutEffect,
-  useCallback,
-  createContext,
 } from 'react';
 import { useHistory } from 'react-router';
 import { useInfiniteQuery, useQueryClient, useMutation } from 'react-query';
-import {
-  VariableSizeList as List,
-  ListOnItemsRenderedProps,
-} from 'react-window';
+import { FixedSizeList as List, ListOnItemsRenderedProps } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 
 import {
@@ -69,8 +64,6 @@ type inputType = '' | '新建' | '编辑';
 type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
 
 const limit = 10;
-
-export const ChatContext = createContext({});
 
 export default () => {
   const [sortForm] = Form.useForm();
@@ -131,18 +124,6 @@ export default () => {
   const datas = data?.pages,
     pages = datas?.reduce((acc, cur) => acc.concat(cur?.data), []),
     total = datas?.[datas?.length - 1]?.total || 0;
-
-  const sizeMap = useRef<{ [key: string]: number }>({});
-  const setSize = useCallback((id, size) => {
-    console.log('set');
-    sizeMap.current = { ...sizeMap.current, [id]: size };
-  }, []);
-
-  const getSize = useCallback((index) => {
-    const id = pages?.[index]._id;
-    console.log('get');
-    return sizeMap.current[id] || 50;
-  }, []);
 
   const creator = useMutation(
     (data) => RESTful.post(`${mainHost()}/record/create`, { data }),
@@ -321,52 +302,20 @@ export default () => {
     ref: React.Ref<any>;
   }) {
     return (
-      <ChatContext.Provider value={{ setSize }}>
-        <List
-          style={{ paddingBottom: '12px' }}
-          height={contentRect?.height || 0}
-          width={'100%'}
-          itemCount={total}
-          onItemsRendered={onItemsRendered}
-          ref={ref}
-          itemSize={getSize}
-          // itemData={pages}
-          // itemKey={getItemKey}
-        >
-          {renderItem}
-        </List>
-      </ChatContext.Provider>
+      <List
+        style={{ paddingBottom: '12px' }}
+        height={contentRect?.height || 0}
+        width={'100%'}
+        itemCount={total}
+        onItemsRendered={onItemsRendered}
+        ref={ref}
+        itemSize={220}
+        itemData={pages}
+        itemKey={getItemKey}
+      >
+        {renderItem}
+      </List>
     );
-  }
-
-  function calcItemSize(index: number) {
-    const record = pages[index];
-    console.log(index, record);
-    const width = contentRect?.width || 0;
-    const lineHeight = 22;
-    // 基本高度 = Item高度 - 两行文本内容 + padding
-    let baseHeight = 125 - lineHeight * 2 + 12;
-
-    // 基本宽度 = 屏幕宽度 - padding*2 - margin*2
-    const baseWidth = width - 12 * 2 - 12 * 2;
-    // 字号
-    const fontSize = 14;
-    // 原文 长度
-    const sl = record?.source?.length * fontSize || 1;
-    //译文 长度
-    const tl = record?.translation?.length * fontSize || 1;
-
-    // 总行数
-    const rowNums = Math.ceil(sl / baseWidth) + Math.ceil(tl / baseWidth);
-
-    let rowHeight = rowNums * lineHeight + baseHeight;
-
-    // 0.75为系数，全角字符是14px半角则是一半；
-    if (rowNums > 2) {
-      rowHeight *= 0.75;
-    }
-
-    return rowHeight;
   }
 
   return (

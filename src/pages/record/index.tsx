@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { useInfiniteQuery, useQueryClient } from 'react-query';
+import { VariableSizeList as List } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
 
 import { Input, Layout, Button, Menu, Space, Modal, Form, Radio } from 'antd';
 
@@ -72,7 +74,7 @@ export default () => {
         silence: 'success',
         params: {
           ...params,
-          skip: pageParam * 10,
+          skip: pageParam * limit,
           limit,
         },
       });
@@ -168,6 +170,37 @@ export default () => {
     setSelectedItems([]);
   }
 
+  // const length = pages?.length || 0;
+  // react-window-infinite
+  // If there are more items to be loaded then add an extra row to hold a loading indicator.
+  // const itemCount = hasNextPage ? length + 1 : length;
+
+  // Only load 1 page of items at a time.
+  // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
+  const loadMoreItems = isFetching ? () => null : () => fetchNextPage();
+
+  // Every row is loaded except for our loading indicator row.
+  // const isItemLoaded = index => !hasNextPage || index < pages.length;
+  const isItemLoaded = (index: number) => !hasNextPage || index < pages?.length;
+
+  // Render an item or a loading indicator.
+  const Item = ({
+    index,
+    style,
+  }: {
+    index: number;
+    style: React.CSSProperties;
+  }) => {
+    let content;
+    if (!isItemLoaded(index)) {
+      content = 'Loading...';
+    } else {
+      content = pages[index]?.source;
+    }
+
+    return <div style={style}>{content}</div>;
+  };
+
   return (
     <Layout style={{ height: '100%' }}>
       <RecordHeader>
@@ -228,7 +261,25 @@ export default () => {
         </Modal>
       </RecordHeader>
       <Content style={{ overflowY: 'auto' }}>
-        {pages?.map((record: Record) => {
+        <InfiniteLoader
+          isItemLoaded={isItemLoaded}
+          itemCount={total}
+          loadMoreItems={loadMoreItems}
+        >
+          {({ onItemsRendered, ref }) => (
+            <List
+              height={400}
+              width={'100%'}
+              itemCount={total}
+              onItemsRendered={onItemsRendered}
+              ref={ref}
+              itemSize={() => 200}
+            >
+              {Item}
+            </List>
+          )}
+        </InfiniteLoader>
+        {/* {pages?.map((record: Record) => {
           const selected = selectedItems.some((s) => s === record?._id);
           return (
             <RecordItem
@@ -240,7 +291,7 @@ export default () => {
               onRemoveClick={onItemRemoveClick}
             />
           );
-        })}
+        })} */}
       </Content>
       <RecordFooter>
         <Space style={{ marginRight: '12px' }}>

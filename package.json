@@ -33,6 +33,7 @@
   "devDependencies": {
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/react-window-infinite-loader": "^1.0.3",
     "@types/styled-components": "^5.1.7",
     "@umijs/plugin-qiankun": "^2.21.2",
     "@umijs/test": "^3.3.5",

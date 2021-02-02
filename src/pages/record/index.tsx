@@ -135,7 +135,7 @@ export default () => {
 
   const updater = useMutation(
     (data?: { [key: string]: any }) =>
-      RESTful.put(`${mainHost()}/record/update`, {
+      RESTful.patch(`${mainHost()}/record/update`, {
         data: { id: curRecrod?._id, ...data },
       }),
     {

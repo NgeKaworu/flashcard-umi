@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { useHistory } from 'react-router';
+import React, { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 
 import {
@@ -7,12 +6,8 @@ import {
   Input,
   Layout,
   Button,
-  Menu,
   Space,
-  Modal,
   Form,
-  Radio,
-  Card,
   Skeleton,
   Divider,
 } from 'antd';
@@ -73,32 +68,11 @@ export default () => {
   const [curIdx, setCurIdx] = useState<number>(0);
   const queryClient = useQueryClient();
 
-  useLayoutEffect(() => {
-    if (flag === 'success') {
-      window.addEventListener('unload', onRemember);
-    }
-    if (flag === 'fail') {
-      window.addEventListener('unload', onForget);
-    }
-
-    return () => {
-      if (flag === 'success') {
-        onRemember();
-        window.removeEventListener('unload', onRemember);
-      }
-
-      if (flag === 'fail') {
-        onForget();
-        window.removeEventListener('unload', onForget);
-      }
-    };
-  }, [flag]);
-
   const { data } = useQuery('review-list', () => {
     return RESTful.get(`${mainHost()}/record/list`, {
       silence: 'success',
       params: {
-        isReview: true,
+        inReview: true,
         skip: 0,
         limit: 0,
       },
@@ -107,16 +81,21 @@ export default () => {
 
   const datas = data?.data,
     curRencord: Record = datas?.[curIdx];
-  console.log(curRencord);
 
   const { isLoading, mutate } = useMutation(
     (data: { [key: string]: any }) => {
-      return RESTful.patch(`${mainHost()}/record/set-review-result`, { data });
+      return RESTful.patch(`${mainHost()}/record/set-review-result`, {
+        data,
+        silence: 'success',
+      });
     },
     {
       onSuccess: async () => {
         queryClient.invalidateQueries('records-list');
         queryClient.invalidateQueries('review-list');
+        setFlag('normal');
+        setCurIdx(0);
+        form.resetFields();
       },
     },
   );
@@ -228,7 +207,7 @@ export default () => {
 
   function submitHandler() {
     form.validateFields().then((values) => {
-      if (values.answer === curRencord.translation) {
+      if (values.answer === curRencord.source) {
         setFlag('success');
       } else {
         setFlag('fail');
@@ -243,13 +222,13 @@ export default () => {
         {datas?.length ? (
           <FlexForm form={form}>
             <FlexFormItem>
-              <div>原文： </div>
-              {curRencord?.source}
+              <div>译文： </div>
+              {curRencord?.translation}
             </FlexFormItem>
             <Divider />
             <FlexFormItem>
-              <div>译文： </div>
-              {flag !== 'normal' ? curRencord?.translation : <Skeleton />}
+              <div>原文： </div>
+              {flag !== 'normal' ? curRencord?.source : <Skeleton />}
             </FlexFormItem>
             <Divider />
             <div>默写区： </div>

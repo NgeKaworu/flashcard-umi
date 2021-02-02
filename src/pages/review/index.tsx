@@ -73,6 +73,27 @@ export default () => {
   const [curIdx, setCurIdx] = useState<number>(0);
   const queryClient = useQueryClient();
 
+  useLayoutEffect(() => {
+    if (flag === 'success') {
+      window.addEventListener('unload', onRemember);
+    }
+    if (flag === 'fail') {
+      window.addEventListener('unload', onForget);
+    }
+
+    return () => {
+      if (flag === 'success') {
+        onRemember();
+        window.removeEventListener('unload', onRemember);
+      }
+
+      if (flag === 'fail') {
+        onForget();
+        window.removeEventListener('unload', onForget);
+      }
+    };
+  }, [flag]);
+
   const { data } = useQuery('review-list', () => {
     return RESTful.get(`${mainHost()}/record/list`, {
       silence: 'success',
@@ -207,14 +228,18 @@ export default () => {
 
   function submitHandler() {
     form.validateFields().then((values) => {
-      console.log(values);
+      if (values.answer === curRencord.translation) {
+        setFlag('success');
+      } else {
+        setFlag('fail');
+      }
     });
   }
 
   return (
     <Layout style={{ height: '100%' }}>
       <RecordHeader>{renderTitle()}</RecordHeader>
-      <Content style={{overflowY: 'auto'}}>
+      <Content style={{ overflowY: 'auto' }}>
         {datas?.length ? (
           <FlexForm form={form}>
             <FlexFormItem>
@@ -227,11 +252,11 @@ export default () => {
               {flag !== 'normal' ? curRencord?.translation : <Skeleton />}
             </FlexFormItem>
             <Divider />
+            <div>默写区： </div>
             <FlexFormItem
               name="answer"
               rules={[{ required: true, message: '请把内容默写于此' }]}
             >
-              <div>默写区： </div>
               <Input.TextArea
                 autoSize={{
                   minRows: 8,

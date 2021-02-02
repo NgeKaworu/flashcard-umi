@@ -156,6 +156,33 @@ export default () => {
     },
   );
 
+  const reviewer = useMutation(
+    (data: string[]) => RESTful.patch(`${mainHost()}/record/review`, { data }),
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('records-list');
+        queryClient.invalidateQueries('review-list');
+      },
+    },
+  );
+
+  const randomReviewer = useMutation(
+    (data) => RESTful.patch(`${mainHost()}/record/random-review`, { data }),
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('records-list');
+        queryClient.invalidateQueries('review-list');
+      },
+    },
+  );
+
+  function reviewHandler() {
+    reviewer.mutate(selectedItems);
+  }
+  function randomReviewHandler() {
+    randomReviewer.mutate();
+  }
+
   function onMenuSelect({ key }: SelectInfo) {
     if (key !== 'all') {
       params.set('type', `${key}`);
@@ -258,7 +285,8 @@ export default () => {
   // const isItemLoaded = index => !hasNextPage || index < pages.length;
   const isItemLoaded = (index: number) => !hasNextPage || index < pages?.length;
 
-  const getItemKey = (index: number, data: Record[]) => data?.[index]?._id || index;
+  const getItemKey = (index: number, data: Record[]) =>
+    data?.[index]?._id || index;
 
   // Render an item or a loading indicator.
   function renderItem({
@@ -399,8 +427,16 @@ export default () => {
           {/* <Button danger>删除所选</Button> */}
         </Space>
         <Space>
-          <Button type="primary">复习所选</Button>
-          <Button type="primary">随机复习</Button>
+          <Button
+            type="primary"
+            disabled={!selectedItems.length}
+            onClick={reviewHandler}
+          >
+            复习所选
+          </Button>
+          <Button type="primary" onClick={randomReviewHandler}>
+            随机复习
+          </Button>
           <Button
             type="primary"
             shape="circle"

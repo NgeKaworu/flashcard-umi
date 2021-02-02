@@ -14,6 +14,7 @@ import {
   Radio,
   Card,
   Skeleton,
+  Divider,
 } from 'antd';
 
 const { Header, Content, Footer } = Layout;
@@ -52,8 +53,22 @@ const CenterEmpty = styled(Empty)`
   justify-content: center;
 `;
 
+const FlexForm = styled(Form)`
+  display: flex;
+  flex-direction: column;
+  margin: 12px;
+  padding: 12px;
+  height: calc(100% - 12px - 12px);
+  background-color: white;
+  min-height: 720px;
+`;
+
+const FlexFormItem = styled(Form.Item)`
+  flex: 1;
+`;
 type ReviewType = 'normal' | 'success' | 'fail';
 export default () => {
+  const [form] = Form.useForm();
   const [flag, setFlag] = useState<ReviewType>('normal');
   const [curIdx, setCurIdx] = useState<number>(0);
   const queryClient = useQueryClient();
@@ -69,7 +84,8 @@ export default () => {
     });
   });
 
-  const curRencord: Record = data?.data?.[curIdx];
+  const datas = data?.data,
+    curRencord: Record = datas?.[curIdx];
   console.log(curRencord);
 
   const { isLoading, mutate } = useMutation(
@@ -164,19 +180,23 @@ export default () => {
     switch (flag) {
       case 'normal':
         return (
-          <Button type="primary" disabled={total <= 1} onClick={onNext}>
+          <Button disabled={total <= 1} onClick={onNext}>
             跳过当前
           </Button>
         );
       case 'success':
         return (
-          <Button type="primary" onClick={onRemember} loading={isLoading}>
+          <Button
+            onClick={onRemember}
+            loading={isLoading}
+            style={{ background: 'lightgreen' }}
+          >
             记忆成功，{hasNext ? '下一项' : '完成复习'}
           </Button>
         );
       case 'fail':
         return (
-          <Button type="primary" onClick={onForget} loading={isLoading}>
+          <Button type="primary" danger onClick={onForget} loading={isLoading}>
             记忆失败,{hasNext ? '下一项' : '完成复习'}
           </Button>
         );
@@ -185,17 +205,55 @@ export default () => {
     }
   }
 
+  function submitHandler() {
+    form.validateFields().then((values) => {
+      console.log(values);
+    });
+  }
+
   return (
     <Layout style={{ height: '100%' }}>
       <RecordHeader>{renderTitle()}</RecordHeader>
-      <Content>
-        <CenterEmpty />
+      <Content style={{overflowY: 'auto'}}>
+        {datas?.length ? (
+          <FlexForm form={form}>
+            <FlexFormItem>
+              <div>原文： </div>
+              {curRencord?.source}
+            </FlexFormItem>
+            <Divider />
+            <FlexFormItem>
+              <div>译文： </div>
+              {flag !== 'normal' ? curRencord?.translation : <Skeleton />}
+            </FlexFormItem>
+            <Divider />
+            <FlexFormItem
+              name="answer"
+              rules={[{ required: true, message: '请把内容默写于此' }]}
+            >
+              <div>默写区： </div>
+              <Input.TextArea
+                autoSize={{
+                  minRows: 8,
+                }}
+                placeholder="请把内容默写于此"
+                allowClear
+              />
+            </FlexFormItem>
+          </FlexForm>
+        ) : (
+          <CenterEmpty />
+        )}
       </Content>
       <RecordFooter>
         <Space style={{ marginRight: '12px' }}>还剩{total}个条目在队列中</Space>
         <Space>
           {renderNextBtn()}
-          <Button type="primary" disabled={flag !== 'normal'}>
+          <Button
+            type="primary"
+            disabled={flag !== 'normal'}
+            onClick={submitHandler}
+          >
             提交
           </Button>
         </Space>

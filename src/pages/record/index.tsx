@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useLayoutEffect,
-} from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useHistory } from 'react-router';
 import { useInfiniteQuery, useQueryClient, useMutation } from 'react-query';
 import { FixedSizeList as List, ListOnItemsRenderedProps } from 'react-window';
@@ -19,6 +14,8 @@ import {
   Modal,
   Form,
   Radio,
+  Card,
+  Skeleton,
 } from 'antd';
 
 const { Header, Content, Footer } = Layout;
@@ -63,7 +60,7 @@ const CenterEmpty = styled(Empty)`
 type inputType = '' | '新建' | '编辑';
 type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
 
-const limit = 10;
+const limit = 2;
 
 export default () => {
   const [sortForm] = Form.useForm();
@@ -261,7 +258,7 @@ export default () => {
   // const isItemLoaded = index => !hasNextPage || index < pages.length;
   const isItemLoaded = (index: number) => !hasNextPage || index < pages?.length;
 
-  const getItemKey = (index: number, data: Record[]) => data?.[index]?._id;
+  const getItemKey = (index: number, data: Record[]) => data?.[index]?._id || index;
 
   // Render an item or a loading indicator.
   function renderItem({
@@ -274,10 +271,12 @@ export default () => {
     const record = pages[index];
     const selected = selectedItems.some((s) => s === record?._id);
 
-    let content;
-    if (!isItemLoaded(index)) {
-      content = 'Loading...';
-    } else {
+    let content = (
+      <Card style={{ margin: '12px' }}>
+        <Skeleton />
+      </Card>
+    );
+    if (isItemLoaded(index)) {
       content = (
         <RecordItem
           key={record._id}

@@ -157,11 +157,13 @@ export default () => {
   );
 
   const reviewer = useMutation(
-    (data: string[]) => RESTful.patch(`${mainHost()}/record/review`, { data }),
+    (ids: string[]) =>
+      RESTful.patch(`${mainHost()}/record/review`, { data: { ids } }),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
         queryClient.invalidateQueries('review-list');
+        history.push('/review/')
       },
     },
   );
@@ -172,6 +174,7 @@ export default () => {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
         queryClient.invalidateQueries('review-list');
+        history.push('/review/')
       },
     },
   );

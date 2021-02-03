@@ -23,4 +23,13 @@ export default defineConfig({
       ],
     },
   ],
+
+  hash: true,
+  base: '/flashcard',
+  publicPath: '/flashcard/',
+  runtimePublicPath: true,
+  externals: {
+    moment: 'moment',
+  },
+  scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
 });

@@ -5,6 +5,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import theme from '@/theme';
 import { Record } from '@/models/record';
+import styled from 'styled-components';
 
 export interface RecordItemProps {
   onClick: (id: string) => void;

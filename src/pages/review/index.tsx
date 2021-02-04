@@ -14,52 +14,15 @@ import {
 
 const { Header, Content, Footer } = Layout;
 
-
 import { RESTful } from '@/http';
 import { mainHost } from '@/http/host';
 
 import { Record } from '@/models/record';
 import moment from 'moment';
 
-const RecordHeader = styled(Header)`
-  background: white;
-  box-shadow: 0px 1px 20px 5px rgb(0 0 0 / 5%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  overflow-x: auto;
-`;
+import styles from '@/index.less';
+import reviewStyles from './index.less';
 
-const RecordFooter = styled(Footer)`
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  width: 100vw;
-  overflow-x: auto;
-  padding: 12px 8px;
-`;
-
-const CenterEmpty = styled(Empty)`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const FlexForm = styled(Form)`
-  display: flex;
-  flex-direction: column;
-  margin: 12px;
-  padding: 12px;
-  height: calc(100% - 12px - 12px);
-  background-color: white;
-  min-height: 720px;
-`;
-
-const FlexFormItem = styled(Form.Item)`
-  flex: 1;
-`;
 type ReviewType = 'normal' | 'success' | 'fail';
 export default () => {
   const [form] = Form.useForm();
@@ -222,22 +185,23 @@ export default () => {
 
   return (
     <Layout style={{ height: '100%' }}>
-      <RecordHeader style={{background: "#fff"}}>{renderTitle()}</RecordHeader>
+      <Header className={styles['header']}>{renderTitle()}</Header>
       <Content style={{ overflowY: 'auto', height: '100%' }}>
         {datas?.length ? (
-          <FlexForm form={form}>
-            <FlexFormItem>
+          <Form className={reviewStyles['form']} form={form}>
+            <Form.Item className={reviewStyles['form-item']}>
               <div>译文： </div>
               {curRencord?.translation}
-            </FlexFormItem>
+            </Form.Item>
             <Divider />
-            <FlexFormItem>
+            <Form.Item className={reviewStyles['form-item']}>
               <div>原文： </div>
               {flag !== 'normal' ? curRencord?.source : <Skeleton />}
-            </FlexFormItem>
+            </Form.Item>
             <Divider />
             <div>默写区： </div>
-            <FlexFormItem
+            <Form.Item
+              className={reviewStyles['form-item']}
               name="answer"
               rules={[{ required: true, message: '请把内容默写于此' }]}
             >
@@ -248,13 +212,13 @@ export default () => {
                 placeholder="请把内容默写于此"
                 allowClear
               />
-            </FlexFormItem>
-          </FlexForm>
+            </Form.Item>
+          </Form>
         ) : (
-          <CenterEmpty />
+          <Empty className={styles['empty']} />
         )}
       </Content>
-      <RecordFooter style={{background: "#fff"}}>
+      <Footer className={styles['footer']}>
         <Space style={{ marginRight: '12px' }}>还剩{total}个条目在队列中</Space>
         <Space>
           {renderNextBtn()}
@@ -266,7 +230,7 @@ export default () => {
             提交
           </Button>
         </Space>
-      </RecordFooter>
+      </Footer>
     </Layout>
   );
 };

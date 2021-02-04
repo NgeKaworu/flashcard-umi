@@ -10,23 +10,14 @@ const { Content, Footer } = Layout;
 
 import zhCN from 'antd/es/locale/zh_CN';
 import theme from '@/theme';
+import styled from 'styled-components';
+import styles from './index.less';
 
 const queyClient = new QueryClient();
-
-const FooterMenu = styled(Footer)`
-  height: 60px;
-  border-top: 1px solid rgba(233, 233, 233, 05);
-  display: flex;
-  justify-content: space-around;
-  padding: 0;
-  background: white;
-  box-shadow: 0px -1px 20px 5px rgb(0 0 0 / 5%);
-`;
 
 interface MenuItemProps {
   active: boolean;
 }
-
 const MenuItem = styled.div<MenuItemProps>`
   .anticon {
     font-size: 28px;
@@ -76,7 +67,7 @@ export default (props: PropsWithChildren<any>) => {
           >
             {props.children}
           </Content>
-          <FooterMenu>
+          <Footer className={styles['footer-menu']}>
             {menu.map((i) => (
               <MenuItem
                 key={i.path}
@@ -88,7 +79,7 @@ export default (props: PropsWithChildren<any>) => {
                 {i.title}
               </MenuItem>
             ))}
-          </FooterMenu>
+          </Footer>
         </Layout>
       </ConfigProvider>
     </QueryClientProvider>

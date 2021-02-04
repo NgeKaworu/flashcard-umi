@@ -31,30 +31,8 @@ import RecordItem from './components/RecordItem';
 
 import { Record } from '@/models/record';
 
-const RecordHeader = styled(Header)`
-  background: white;
-  box-shadow: 0px 1px 20px 5px rgb(0 0 0 / 5%);
-  display: flex;
-  align-items: center;
-  width: 100vw;
-  overflow-x: auto;
-`;
+import styles from '@/index.less'
 
-const RecordFooter = styled(Footer)`
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  width: 100vw;
-  overflow-x: auto;
-  padding: 12px 8px;
-`;
-
-const CenterEmpty = styled(Empty)`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`;
 
 type inputType = '' | '新建' | '编辑';
 type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
@@ -349,7 +327,7 @@ export default () => {
 
   return (
     <Layout style={{ height: '100%' }}>
-      <RecordHeader style={{background: "#fff"}}>
+      <Header className={styles['header']}>
         <Menu
           mode="horizontal"
           style={{ margin: '0 auto' }}
@@ -404,7 +382,7 @@ export default () => {
             </Form.Item>
           </Form>
         </Modal>
-      </RecordHeader>
+      </Header>
       <Content style={{ height: '100%' }}>
         <div style={{ width: '100%', height: '100%' }} ref={contentRef}>
           {pages?.length ? (
@@ -416,11 +394,11 @@ export default () => {
               {renderList}
             </InfiniteLoader>
           ) : (
-            <CenterEmpty />
+            <Empty className={styles['empty']} />
           )}
         </div>
       </Content>
-      <RecordFooter style={{background: "#fff"}}>
+      <Footer className={styles['footer']}>
         <Space style={{ marginRight: '12px' }}>
           {selectedItems.length}/{total}
           <Button type="dashed" onClick={cancelAllSelect}>
@@ -447,7 +425,7 @@ export default () => {
             data-input-type="新建"
           />
         </Space>
-      </RecordFooter>
+      </Footer>
       <Modal
         title={inputType}
         visible={inputVisable}

@@ -124,22 +124,28 @@ export default () => {
         case 0:
           data.cooldownAt = now.add(1, 'hour');
           data.exp = exp + 25;
+          break;
         case 25:
           data.cooldownAt = now.add(1, 'day');
           data.exp = exp + 25;
+          break;
         case 50:
           data.cooldownAt = now.add(1, 'week');
           data.exp = exp + 25;
+          break;
         case 75:
           data.cooldownAt = now.add(1, 'month');
           data.exp = exp + 25;
+          break;
         case 100:
           data.cooldownAt = now.add(1, 'hours');
+          break;
         default:
           console.error('invalidate exp type: ', exp);
           break;
       }
     }
+    data.cooldownAt = data.cooldownAt?.toISOString();
     mutate(data);
   }
 
@@ -158,7 +164,7 @@ export default () => {
       cooldownAt: now.add(1, 'hour'),
       exp,
     };
-
+    data.cooldownAt = data.cooldownAt?.toISOString();
     mutate(data);
   }
 

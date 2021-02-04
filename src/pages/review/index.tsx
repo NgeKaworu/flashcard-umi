@@ -207,7 +207,7 @@ export default () => {
 
   function submitHandler() {
     form.validateFields().then((values) => {
-      if (values.answer === curRencord.source) {
+      if (values.answer?.trim() === curRencord.source?.trim()) {
         setFlag('success');
       } else {
         setFlag('fail');

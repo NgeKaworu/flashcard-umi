@@ -28,6 +28,14 @@ export default defineConfig({
   base: '/flashcard',
   publicPath: '/flashcard/',
   runtimePublicPath: true,
+  extraBabelPlugins: [
+    [
+      'babel-plugin-styled-components',
+      {
+        namespace: 'flashcard',
+      },
+    ],
+  ],
   externals: {
     moment: 'moment',
   },

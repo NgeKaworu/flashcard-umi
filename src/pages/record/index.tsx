@@ -60,7 +60,7 @@ const CenterEmpty = styled(Empty)`
 type inputType = '' | '新建' | '编辑';
 type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
 
-const limit = 2;
+const limit = 10;
 
 export default () => {
   const [sortForm] = Form.useForm();

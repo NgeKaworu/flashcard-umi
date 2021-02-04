@@ -218,7 +218,7 @@ export default () => {
   return (
     <Layout style={{ height: '100%' }}>
       <RecordHeader>{renderTitle()}</RecordHeader>
-      <Content style={{ overflowY: 'auto' }}>
+      <Content style={{ overflowY: 'auto', height: '100%' }}>
         {datas?.length ? (
           <FlexForm form={form}>
             <FlexFormItem>

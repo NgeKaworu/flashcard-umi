@@ -163,7 +163,7 @@ export default () => {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
         queryClient.invalidateQueries('review-list');
-        history.push('/review/')
+        history.push('/review/');
       },
     },
   );
@@ -174,7 +174,7 @@ export default () => {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
         queryClient.invalidateQueries('review-list');
-        history.push('/review/')
+        history.push('/review/');
       },
     },
   );
@@ -406,7 +406,7 @@ export default () => {
           </Form>
         </Modal>
       </RecordHeader>
-      <Content>
+      <Content style={{ height: '100%' }}>
         <div style={{ width: '100%', height: '100%' }} ref={contentRef}>
           {pages?.length ? (
             <InfiniteLoader

@@ -357,7 +357,7 @@ export default () => {
           onSelect={onMenuSelect}
           selectedKeys={selectedKeys}
         >
-          <Menu.Item key="enabled">可复习</Menu.Item>
+          <Menu.Item key="enable">可复习</Menu.Item>
           <Menu.Item key="cooling">冷却中</Menu.Item>
           <Menu.Item key="done">己完成</Menu.Item>
           <Menu.Item key="all">全部</Menu.Item>

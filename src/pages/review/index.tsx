@@ -14,7 +14,6 @@ import {
 
 const { Header, Content, Footer } = Layout;
 
-import styled from 'styled-components';
 
 import { RESTful } from '@/http';
 import { mainHost } from '@/http/host';
@@ -223,7 +222,7 @@ export default () => {
 
   return (
     <Layout style={{ height: '100%' }}>
-      <RecordHeader>{renderTitle()}</RecordHeader>
+      <RecordHeader style={{background: "#fff"}}>{renderTitle()}</RecordHeader>
       <Content style={{ overflowY: 'auto', height: '100%' }}>
         {datas?.length ? (
           <FlexForm form={form}>
@@ -255,7 +254,7 @@ export default () => {
           <CenterEmpty />
         )}
       </Content>
-      <RecordFooter>
+      <RecordFooter style={{background: "#fff"}}>
         <Space style={{ marginRight: '12px' }}>还剩{total}个条目在队列中</Space>
         <Space>
           {renderNextBtn()}

@@ -20,7 +20,6 @@ import {
 
 const { Header, Content, Footer } = Layout;
 
-import styled from 'styled-components';
 import { PlusOutlined } from '@ant-design/icons';
 
 import { SelectInfo } from 'rc-menu/lib/interface';
@@ -350,7 +349,7 @@ export default () => {
 
   return (
     <Layout style={{ height: '100%' }}>
-      <RecordHeader>
+      <RecordHeader style={{background: "#fff"}}>
         <Menu
           mode="horizontal"
           style={{ margin: '0 auto' }}
@@ -421,7 +420,7 @@ export default () => {
           )}
         </div>
       </Content>
-      <RecordFooter>
+      <RecordFooter style={{background: "#fff"}}>
         <Space style={{ marginRight: '12px' }}>
           {selectedItems.length}/{total}
           <Button type="dashed" onClick={cancelAllSelect}>

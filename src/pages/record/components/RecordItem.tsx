@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
 
 import { Divider, Popconfirm, Button } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';

@@ -9,7 +9,6 @@ import { FormOutlined, SyncOutlined } from '@ant-design/icons';
 const { Content, Footer } = Layout;
 
 import zhCN from 'antd/es/locale/zh_CN';
-import styled from 'styled-components';
 import theme from '@/theme';
 
 const queyClient = new QueryClient();

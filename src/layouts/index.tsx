@@ -72,6 +72,7 @@ export default (props: PropsWithChildren<any>) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              height: '100%',
             }}
           >
             {props.children}

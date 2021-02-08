@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 
 import {
@@ -43,6 +43,12 @@ export default () => {
 
   const datas = data?.data,
     curRencord: Record = datas?.[curIdx];
+
+  const [source, setSource] = useState<React.ReactChild>('');
+
+  useEffect(() => {
+    setSource(curRencord?.source);
+  }, [curRencord?.source]);
 
   const { isLoading, mutate } = useMutation(
     (data: { [key: string]: any }) => {
@@ -175,9 +181,24 @@ export default () => {
 
   function submitHandler() {
     form.validateFields().then((values) => {
-      if (values.answer?.trim() === curRencord.source?.trim()) {
+      const answer = values.answer?.trim(),
+        actual = curRencord?.source?.trim();
+      if (answer === actual) {
         setFlag('success');
       } else {
+        let j = 0;
+        const diff = actual?.split('')?.map((i, idx) => {
+          if (i !== answer[j]) {
+            return (
+              <span key={idx} style={{ background: 'lightcoral' }}>
+                {i}
+              </span>
+            );
+          }
+          j += 1;
+          return i;
+        });
+        setSource(<>{diff}</>);
         setFlag('fail');
       }
     });
@@ -196,7 +217,7 @@ export default () => {
             <Divider />
             <Form.Item className={reviewStyles['form-item']}>
               <div>原文： </div>
-              {flag !== 'normal' ? curRencord?.source : <Skeleton />}
+              {flag !== 'normal' ? source : <Skeleton />}
             </Form.Item>
             <Divider />
             <div>默写区： </div>

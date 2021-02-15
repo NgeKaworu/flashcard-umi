@@ -91,19 +91,23 @@ export default () => {
       switch (exp) {
         case 0:
           data.cooldownAt = now.add(1, 'hour');
-          data.exp = exp + 25;
+          data.exp = exp + 20;
           break;
-        case 25:
+        case 20:
           data.cooldownAt = now.add(1, 'day');
-          data.exp = exp + 25;
+          data.exp = exp + 20;
           break;
-        case 50:
+        case 40:
           data.cooldownAt = now.add(1, 'week');
-          data.exp = exp + 25;
+          data.exp = exp + 20;
           break;
-        case 75:
+        case 60:
           data.cooldownAt = now.add(1, 'month');
-          data.exp = exp + 25;
+          data.exp = exp + 20;
+          break;
+        case 80:
+          data.cooldownAt = now.add(1, 'hours');
+          data.exp = exp + 20;
           break;
         case 100:
           data.cooldownAt = now.add(1, 'hours');
@@ -123,7 +127,7 @@ export default () => {
     let exp = curRencord?.exp;
     // 经验降一级
     if (exp !== 0) {
-      exp -= 25;
+      exp -= 20;
     }
 
     const data: { [key: string]: any } = {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 
 import {
@@ -190,19 +190,36 @@ export default () => {
       if (answer === actual) {
         setFlag('success');
       } else {
-        let j = 0;
-        const diff = actual?.split('')?.map((i, idx) => {
-          if (i !== answer[j]) {
-            return (
-              <span key={idx} style={{ background: 'lightcoral' }}>
-                {i}
-              </span>
-            );
-          }
-          j += 1;
-          return i;
-        });
-        setSource(<>{diff}</>);
+        const actualDict = actual
+            ?.split(' ')
+            ?.reduce((acc: { [key: string]: number }, cur) => {
+              if (acc[cur] === undefined) {
+                acc[cur] = 1;
+              } else {
+                acc[cur]++;
+              }
+              return acc;
+            }, {}),
+          diff: Array<React.ReactNode> = answer
+            ?.split(' ')
+            ?.map((i: string, idx: number) => {
+              let ele: React.ReactNode;
+              if (actualDict[i] > 0) {
+                actualDict[i]--;
+                ele = i;
+              } else {
+                ele = <span style={{ background: 'lightcoral' }}>{i}</span>;
+              }
+              return <Fragment key={idx}>{ele} </Fragment>;
+            });
+
+        setSource(
+          <>
+            {actual}
+            <br />
+            {diff}
+          </>,
+        );
         setFlag('fail');
       }
     });

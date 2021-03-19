@@ -31,8 +31,7 @@ import RecordItem from './components/RecordItem';
 
 import { Record } from '@/models/record';
 
-import styles from '@/index.less'
-
+import styles from '@/index.less';
 
 type inputType = '' | '新建' | '编辑';
 type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;

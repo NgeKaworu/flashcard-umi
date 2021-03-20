@@ -42,7 +42,12 @@ const MenuItem = styled.div<MenuItemProps>`
 `;
 
 const menu = [
-  { title: '新词本', path: '/record/', icon: <FormOutlined /> },
+  {
+    title: '新词本',
+    path: '/record/',
+    icon: <FormOutlined />,
+    query: { type: 'enable' },
+  },
   { title: '复习', path: '/review/', icon: <SyncOutlined /> },
 ];
 
@@ -51,7 +56,13 @@ export default (props: PropsWithChildren<any>) => {
   const history = useHistory();
 
   function onMenuClick(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    history.push(e.currentTarget.dataset.path as string);
+    const path: string = e?.currentTarget?.dataset?.path as string,
+      query = menu.find((m) => m?.path === path)?.query;
+
+    history.push({
+      pathname: path,
+      search: new URLSearchParams(query)?.toString(),
+    });
   }
   return (
     <QueryClientProvider client={queyClient}>

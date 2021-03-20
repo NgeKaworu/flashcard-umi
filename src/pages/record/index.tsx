@@ -155,11 +155,26 @@ export default () => {
     },
   );
 
+  const allReviewer = useMutation(
+    (data) => RESTful.get(`${mainHost()}/record/review-all`),
+    {
+      onSuccess() {
+        queryClient.invalidateQueries('records-list');
+        queryClient.invalidateQueries('review-list');
+        history.push('/review/');
+      },
+    },
+  );
+
   function reviewHandler() {
     reviewer.mutate(selectedItems);
   }
   function randomReviewHandler() {
     randomReviewer.mutate();
+  }
+
+  function reviewAllHandler() {
+    allReviewer.mutate();
   }
 
   function onMenuSelect({ key }: SelectInfo) {
@@ -415,6 +430,9 @@ export default () => {
           </Button>
           <Button type="primary" onClick={randomReviewHandler}>
             随机复习
+          </Button>
+          <Button type="primary" onClick={reviewAllHandler}>
+            复习全部
           </Button>
           <Button
             type="primary"

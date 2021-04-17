@@ -4,7 +4,7 @@ import { Divider, Popconfirm, Button } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 import theme from '@/theme';
-import { Record } from '@/models/record';
+import type { Record } from '@/models/record';
 import styled from 'styled-components';
 
 export interface RecordItemProps {
@@ -30,24 +30,24 @@ const RecordCard = styled.div<RecordCardProps>`
   overflow-wrap: break-word;
   /* 进度条 */
   ::before {
-    content: ' ';
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 2px;
     width: ${({ percent }) => percent}%;
+    height: 2px;
     background-image: linear-gradient(to right, red, lightgreen);
+    content: ' ';
   }
   /* 选中状态 */
   ::after {
-    content: ' ';
     position: absolute;
+    top: 0;
+    left: 0;
     width: 1px;
     height: 100%;
-    left: 0;
-    top: 0;
-    visibility: ${({ selected }) => (selected ? 'visible' : 'hidden')};
     background-color: ${theme['primary-color']};
+    visibility: ${({ selected }) => (selected ? 'visible' : 'hidden')};
+    content: ' ';
   }
 
   :hover::after {
@@ -82,17 +82,19 @@ export default ({
     onRemoveClick(_id);
   }
 
-  function removeClickButtonHandler(
-    e?: React.MouseEvent<HTMLElement, MouseEvent>,
-  ) {
+  function stopPropagation(e?: React.MouseEvent<HTMLElement, MouseEvent>) {
     e?.stopPropagation();
   }
 
   return (
     <RecordCard selected={selected} percent={percent} onClick={clickHandler}>
-      <div style={{ height: '66px' }}>{source}</div>
+      <div style={{ height: '66px' }} onClick={stopPropagation}>
+        {source}
+      </div>
       <Divider />
-      <div style={{ height: '66px' }}>{translation}</div>
+      <div style={{ height: '66px' }} onClick={stopPropagation}>
+        {translation}
+      </div>
       <div className="tools-bar">
         <Button
           size="small"
@@ -103,13 +105,13 @@ export default ({
         <Popconfirm
           title={'操作不可逆，请确认'}
           onConfirm={removeClickHandler}
-          onCancel={removeClickButtonHandler}
+          onCancel={stopPropagation}
         >
           <Button
             size="small"
             type="text"
             danger
-            onClick={removeClickButtonHandler}
+            onClick={stopPropagation}
             icon={<DeleteOutlined />}
           ></Button>
         </Popconfirm>

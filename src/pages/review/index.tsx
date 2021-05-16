@@ -41,6 +41,17 @@ export default () => {
     });
   });
 
+  function findOneNearestNeedReview() {
+    return RESTful.get(`${mainHost()}/record/list?sort=cooldownAt&orderby=-1`, {
+      silence: 'success',
+      params: {
+        inReview: false,
+        skip: 0,
+        limit: 1,
+      },
+    }).then((data: any) => data);
+  }
+
   const datas = data?.data,
     curRencord: Record = datas?.[curIdx];
 
@@ -69,6 +80,7 @@ export default () => {
   );
 
   const total = data?.total || 0;
+  const hasNext = curIdx < total - 1;
 
   function onNext() {
     setCurIdx((i) => (++i === total ? 0 : i));
@@ -88,26 +100,41 @@ export default () => {
 
     // 过了冷却才能涨经验
     if (now.isAfter(cooldownAt)) {
+      // 艾宾浩斯遗忘曲线
       switch (exp) {
         case 0:
+          data.cooldownAt = now.add(0.5, 'hour');
+          data.exp = exp + 10;
+          break;
+        case 10:
           data.cooldownAt = now.add(1, 'hour');
-          data.exp = exp + 20;
+          data.exp = exp + 10;
           break;
         case 20:
-          data.cooldownAt = now.add(1, 'day');
-          data.exp = exp + 20;
+          data.cooldownAt = now.add(0.5, 'day');
+          data.exp = exp + 10;
           break;
+        case 30:
         case 40:
-          data.cooldownAt = now.add(1, 'week');
-          data.exp = exp + 20;
+          data.cooldownAt = now.add(1, 'day');
+          data.exp = exp + 10;
           break;
+        case 50:
         case 60:
-          data.cooldownAt = now.add(1, 'month');
-          data.exp = exp + 20;
+          data.cooldownAt = now.add(2, 'day');
+          data.exp = exp + 10;
+          break;
+        case 70:
+          data.cooldownAt = now.add(1, 'week');
+          data.exp = exp + 10;
           break;
         case 80:
+          data.cooldownAt = now.add(0.5, 'month');
+          data.exp = exp + 10;
+          break;
+        case 90:
           data.cooldownAt = now.add(1, 'hours');
-          data.exp = exp + 20;
+          data.exp = exp + 10;
           break;
         case 100:
           data.cooldownAt = now.add(1, 'hours');
@@ -119,6 +146,9 @@ export default () => {
     }
     data.cooldownAt = data.cooldownAt?.toISOString();
     mutate(data);
+    if (!hasNext) {
+      notifyMe();
+    }
   }
 
   function onForget() {
@@ -127,7 +157,7 @@ export default () => {
     let exp = curRencord?.exp;
     // 经验降一级
     if (exp !== 0) {
-      exp -= 20;
+      exp -= 10;
     }
 
     const data: { [key: string]: any } = {
@@ -138,6 +168,36 @@ export default () => {
     };
     data.cooldownAt = data.cooldownAt?.toISOString();
     mutate(data);
+    if (!hasNext) {
+      notifyMe();
+    }
+  }
+
+  function notifyMe() {
+    Notification.requestPermission(function (result) {
+      if (result === 'granted') {
+        navigator.serviceWorker.ready.then(async function (registration) {
+          const nextReviewRecord = await findOneNearestNeedReview(),
+            nextReviewTime = nextReviewRecord?.data?.[0]?.reviewAt;
+
+          if (nextReviewTime !== undefined) {
+            let nextTime = moment(nextReviewTime).diff(moment());
+            // 最短一小时
+            if (nextTime < 3600000) {
+              nextTime = 3600000;
+            }
+            setTimeout(() => {
+              registration.showNotification('复习提醒', {
+                body: '你有单词需要复习～',
+                // icon: '../images/touch/chrome-touch-icon-192x192.png', // icon
+                vibrate: [200, 100, 200, 100, 200, 100, 200], // 抖动
+                tag: 'review-notify', // 唯一ID
+              });
+            }, nextTime);
+          }
+        });
+      }
+    });
   }
 
   function renderTitle() {
@@ -154,7 +214,6 @@ export default () => {
   }
 
   function renderNextBtn() {
-    const hasNext = curIdx < total - 1;
     switch (flag) {
       case 'normal':
         return (

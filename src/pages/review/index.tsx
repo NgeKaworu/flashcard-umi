@@ -222,20 +222,26 @@ export default () => {
           </Button>
         );
       case 'success':
-        return (
-          <Button
-            onClick={onRemember}
-            loading={isLoading}
-            style={{ background: 'lightgreen' }}
-          >
-            记忆成功，{hasNext ? '下一项' : '完成复习'}
-          </Button>
-        );
       case 'fail':
         return (
-          <Button type="primary" danger onClick={onForget} loading={isLoading}>
-            记忆失败,{hasNext ? '下一项' : '完成复习'}
-          </Button>
+          <Space>
+            <Button
+              onClick={onRemember}
+              loading={isLoading}
+              style={{ background: 'lightgreen' }}
+            >
+              记忆成功，{hasNext ? '下一项' : '完成复习'}
+            </Button>
+
+            <Button
+              type="primary"
+              danger
+              onClick={onForget}
+              loading={isLoading}
+            >
+              记忆失败,{hasNext ? '下一项' : '完成复习'}
+            </Button>
+          </Space>
         );
       default:
         console.error('invalidate type: ', flag);

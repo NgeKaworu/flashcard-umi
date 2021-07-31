@@ -334,7 +334,9 @@ export default () => {
         )}
       </Content>
       <Footer className={styles['footer']}>
-        <Space style={{ marginRight: '12px' }}>还剩{total}个条目在队列中</Space>
+        <Space style={{ marginRight: '12px', whiteSpace: 'pre-wrap' }}>
+          余{total}
+        </Space>
         <Space>
           {renderNextBtn()}
           <Button

@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import { useInfiniteQuery, useQueryClient, useMutation } from 'react-query';
-import { FixedSizeList as List, ListOnItemsRenderedProps } from 'react-window';
-import InfiniteLoader from 'react-window-infinite-loader';
 
 import {
   Empty,
@@ -33,8 +31,14 @@ import { Record } from '@/models/record';
 
 import styles from '@/index.less';
 
+import {
+  WindowScroller,
+  List,
+  InfiniteLoader,
+  ListProps,
+} from 'react-virtualized';
+
 type inputType = '' | '新建' | '编辑';
-type OnItemsRendered = (props: ListOnItemsRenderedProps) => any;
 
 const limit = 10;
 
@@ -52,17 +56,8 @@ export default () => {
   const [inputType, setInputType] = useState<inputType>('新建');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [contentRect, setContentRec] = useState<DOMRect>();
-
   // 编辑modal使用
   const [curRecrod, setCurRecord] = useState<Record>();
-
-  useLayoutEffect(() => {
-    const current = contentRef.current;
-    const obj = current?.getBoundingClientRect();
-    obj && setContentRec(obj);
-  }, [contentRef]);
 
   useEffect(() => {
     const params = new URLSearchParams(_search);
@@ -273,74 +268,55 @@ export default () => {
 
   // Only load 1 page of items at a time.
   // Pass an empty callback to InfiniteLoader in case it asks us to load more than once.
-  const loadMoreItems = isFetching ? () => null : () => fetchNextPage();
+  const loadMoreItems = () =>
+    isFetching ? Promise.resolve() : fetchNextPage();
 
   // Every row is loaded except for our loading indicator row.
   // const isItemLoaded = index => !hasNextPage || index < pages.length;
-  const isItemLoaded = (index: number) => !hasNextPage || index < pages?.length;
+  const isItemLoaded = ({ index }: { index: number }) =>
+    !hasNextPage || index < pages?.length;
 
-  const getItemKey = (index: number, data: Record[]) =>
-    data?.[index]?._id || index;
+  const getRowHeight: ListProps['rowHeight'] = ({ index }) => {
+    const { source, translation } = pages[index] ?? {},
+      baseWidth = document.body.clientWidth - 48,
+      sourceRows =
+        Math.ceil(((source?.length ?? 1) * 14) / baseWidth) +
+        (source?.split('\n')?.length ?? 0),
+      sourceHeight = Math.max(sourceRows * 15, 66),
+      translationRows =
+        Math.ceil(((translation?.length ?? 1) * 14) / baseWidth) +
+        (translation?.split('\n')?.length ?? 0),
+      translationHeight = Math.max(translationRows * 15, 66);
+    return sourceHeight + translationHeight + 50 + 56;
+  };
 
   // Render an item or a loading indicator.
-  function renderItem({
-    index,
-    style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
-  }) {
+  const renderItem: ListProps['rowRenderer'] = ({ index, style, key }) => {
     const record = pages[index];
     const selected = selectedItems.some((s) => s === record?._id);
 
-    let content = (
-      <Card style={{ margin: '12px' }}>
-        <Skeleton />
-      </Card>
-    );
-    if (isItemLoaded(index)) {
-      content = (
-        <RecordItem
-          key={record._id}
-          record={record}
-          selected={selected}
-          onClick={onItemClick}
-          onEditClick={onItemEditClick}
-          onRemoveClick={onItemRemoveClick}
-        />
-      );
-    }
-
-    return <div style={style}>{content}</div>;
-  }
-
-  // Render List
-  function renderList({
-    onItemsRendered,
-    ref,
-  }: {
-    onItemsRendered: OnItemsRendered;
-    ref: React.Ref<any>;
-  }) {
     return (
-      <List
-        style={{ paddingBottom: '12px' }}
-        height={contentRect?.height || 0}
-        width={'100%'}
-        itemCount={total}
-        onItemsRendered={onItemsRendered}
-        ref={ref}
-        itemSize={220}
-        itemData={pages}
-        itemKey={getItemKey}
-      >
-        {renderItem}
-      </List>
+      <div style={{ ...style, padding: '6px 0' }} key={key}>
+        {isItemLoaded({ index }) ? (
+          <RecordItem
+            key={record._id}
+            record={record}
+            selected={selected}
+            onClick={onItemClick}
+            onEditClick={onItemEditClick}
+            onRemoveClick={onItemRemoveClick}
+          />
+        ) : (
+          <Card style={{ margin: '12px' }}>
+            <Skeleton />
+          </Card>
+        )}
+      </div>
     );
-  }
+  };
 
   return (
-    <Layout style={{ height: '100%' }}>
+    <Layout>
       <Header className={styles['header']}>
         <Menu
           mode="horizontal"
@@ -397,20 +373,37 @@ export default () => {
           </Form>
         </Modal>
       </Header>
-      <Content style={{ height: '100%' }}>
-        <div style={{ width: '100%', height: '100%' }} ref={contentRef}>
-          {pages?.length ? (
-            <InfiniteLoader
-              isItemLoaded={isItemLoaded}
-              itemCount={total}
-              loadMoreItems={loadMoreItems}
-            >
-              {renderList}
-            </InfiniteLoader>
-          ) : (
-            <Empty className={styles['empty']} />
-          )}
-        </div>
+      <Content>
+        {pages?.length ? (
+          <InfiniteLoader
+            isRowLoaded={isItemLoaded}
+            rowCount={total}
+            loadMoreRows={loadMoreItems}
+          >
+            {({ onRowsRendered, registerChild }) => (
+              <WindowScroller>
+                {({ registerChild: winRef, ...winProps }) => (
+                  <List
+                    autoHeight
+                    style={{
+                      background: '#f0f2f5',
+                      paddingTop: '58px',
+                      paddingBottom: '128px',
+                    }}
+                    {...winProps}
+                    ref={(ref) => registerChild(winRef(ref))}
+                    rowCount={total}
+                    onRowsRendered={onRowsRendered}
+                    rowHeight={getRowHeight}
+                    rowRenderer={renderItem}
+                  />
+                )}
+              </WindowScroller>
+            )}
+          </InfiniteLoader>
+        ) : (
+          <Empty className={styles['empty']} />
+        )}
       </Content>
       <Footer className={styles['footer']}>
         <Space style={{ marginRight: '12px' }}>

@@ -8,3 +8,8 @@ export const qiankun = {
   // loadMicroApp 方式加载微应用时生效
   async update(props: any) {},
 };
+
+localStorage.setItem(
+  'token',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MDFhODkyMTZhMGUzODFmYjc4OGQxNjkiLCJleHAiOjE2Mjg4NDc3OTQsImlzcyI6ImZ1UmFuIn0.Cyg94bPRnF9YXdrgqC6A9qCbw19H3_g_1oY1nxLU5ck',
+);

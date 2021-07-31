@@ -291,19 +291,14 @@ export default () => {
   }
 
   return (
-    <Layout style={{ height: '100%' }}>
+    <Layout>
       <Header className={styles['header']}>{renderTitle()}</Header>
-      <Content style={{ overflowY: 'auto', height: '100%' }}>
+      <Content className={reviewStyles['content']}>
         {datas?.length ? (
           <Form className={reviewStyles['form']} form={form}>
             <Form.Item className={reviewStyles['form-item']}>
               <div>译文： </div>
               {curRencord?.translation}
-            </Form.Item>
-            <Divider />
-            <Form.Item className={reviewStyles['form-item']}>
-              <div>原文： </div>
-              {flag !== 'normal' ? source : <Skeleton />}
             </Form.Item>
             <Divider />
             <div>默写区： </div>
@@ -319,6 +314,11 @@ export default () => {
                 placeholder="请把内容默写于此"
                 allowClear
               />
+            </Form.Item>
+            <Divider />
+            <Form.Item className={reviewStyles['form-item']}>
+              <div>原文： </div>
+              {flag !== 'normal' ? source : <Skeleton />}
             </Form.Item>
           </Form>
         ) : (

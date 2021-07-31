@@ -26,7 +26,7 @@ const RecordCard = styled.div<RecordCardProps>`
   padding: 12px;
   padding-top: 20px;
   position: relative;
-  /* height: calc(100% - 12px); */
+  height: 100%;
   overflow-wrap: break-word;
   /* 进度条 */
   ::before {
@@ -88,17 +88,11 @@ export default ({
 
   return (
     <RecordCard selected={selected} percent={percent} onClick={clickHandler}>
-      <div
-        style={{ height: '66px', whiteSpace: 'pre-wrap', overflowY: 'scroll' }}
-        onClick={stopPropagation}
-      >
+      <div style={{ whiteSpace: 'pre-wrap' }} onClick={stopPropagation}>
         {source}
       </div>
       <Divider />
-      <div
-        style={{ height: '66px', whiteSpace: 'pre-wrap', overflowY: 'scroll' }}
-        onClick={stopPropagation}
-      >
+      <div style={{ whiteSpace: 'pre-wrap' }} onClick={stopPropagation}>
         {translation}
       </div>
       <div className="tools-bar">

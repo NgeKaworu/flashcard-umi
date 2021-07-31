@@ -67,17 +67,8 @@ export default (props: PropsWithChildren<any>) => {
   return (
     <QueryClientProvider client={queyClient}>
       <ConfigProvider locale={zhCN}>
-        <Layout style={{ minHeight: '100%', height: '100%' }}>
-          <Content
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-            }}
-          >
-            {props.children}
-          </Content>
+        <Layout>
+          <Content>{props.children}</Content>
           <Footer className={styles['footer-menu']}>
             {menu.map((i) => (
               <MenuItem

@@ -292,6 +292,12 @@ export default () => {
     });
   }
 
+  function onHotKey({ key, metaKey }: React.KeyboardEvent) {
+    if (key === 'Enter' && metaKey) {
+      submitHandler();
+    }
+  }
+
   return (
     <Layout>
       <Header className={styles['header']}>{renderTitle()}</Header>
@@ -310,9 +316,9 @@ export default () => {
               rules={[{ required: true, message: '请把内容默写于此' }]}
             >
               <Input.TextArea
-                autoSize={{
-                  minRows: 8,
-                }}
+                autoFocus
+                onKeyDown={onHotKey}
+                autoSize={{ minRows: 8 }}
                 placeholder="请把内容默写于此"
                 allowClear
               />

@@ -88,11 +88,11 @@ export default ({
 
   return (
     <RecordCard selected={selected} percent={percent} onClick={clickHandler}>
-      <div style={{ whiteSpace: 'pre-wrap' }} onClick={stopPropagation}>
+      <div style={{ whiteSpace: 'pre-wrap' }} onClick={clickHandler}>
         {source}
       </div>
       <Divider />
-      <div style={{ whiteSpace: 'pre-wrap' }} onClick={stopPropagation}>
+      <div style={{ whiteSpace: 'pre-wrap' }} onClick={clickHandler}>
         {translation}
       </div>
       <div className="tools-bar">

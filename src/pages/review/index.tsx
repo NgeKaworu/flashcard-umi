@@ -233,14 +233,16 @@ export default () => {
               记忆成功，{hasNext ? '下一项' : '完成复习'}
             </Button>
 
-            <Button
-              type="primary"
-              danger
-              onClick={onForget}
-              loading={isLoading}
-            >
-              记忆失败,{hasNext ? '下一项' : '完成复习'}
-            </Button>
+            {flag === 'fail' && (
+              <Button
+                type="primary"
+                danger
+                onClick={onForget}
+                loading={isLoading}
+              >
+                记忆失败,{hasNext ? '下一项' : '完成复习'}
+              </Button>
+            )}
           </Space>
         );
       default:

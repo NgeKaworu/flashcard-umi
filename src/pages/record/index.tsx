@@ -291,12 +291,12 @@ export default () => {
   };
 
   // Render an item or a loading indicator.
-  const renderItem: ListProps['rowRenderer'] = ({ index, style, key }) => {
+  const renderItem: ListProps['rowRenderer'] = ({ index, style }) => {
     const record = pages[index];
     const selected = selectedItems.some((s) => s === record?._id);
 
     return (
-      <div style={{ ...style, padding: '6px 0' }} key={key}>
+      <div style={{ ...style, padding: '6px 0' }} key={record._id}>
         {isItemLoaded({ index }) ? (
           <RecordItem
             key={record._id}

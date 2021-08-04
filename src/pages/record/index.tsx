@@ -296,10 +296,10 @@ export default () => {
     const selected = selectedItems.some((s) => s === record?._id);
 
     return (
-      <div style={{ ...style, padding: '6px 0' }} key={record._id}>
+      <div style={{ ...style, padding: '6px 0' }} key={record?._id}>
         {isItemLoaded({ index }) ? (
           <RecordItem
-            key={record._id}
+            key={record?._id}
             record={record}
             selected={selected}
             onClick={onItemClick}

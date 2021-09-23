@@ -102,57 +102,45 @@ export default () => {
     if (now.isAfter(cooldownAt)) {
       // 艾宾浩斯遗忘曲线
       switch (exp) {
-        case 5:
-        case 45:
+        case 0:
           data.cooldownAt = now.add(5, 'minutes');
-          data.exp = exp + 5;
+          data.exp = exp + 10;
           break;
         case 10:
-        case 50:
           data.cooldownAt = now.add(25, 'minutes');
-          data.exp = exp + 5;
-          break;
-        case 15:
-        case 55:
-          data.cooldownAt = now.add(11.5, 'hours');
-          data.exp = exp + 5;
+          data.exp = exp + 10;
           break;
         case 20:
-        case 60:
-          data.cooldownAt = now.add(12, 'hours');
-          data.exp = exp + 5;
-          break;
-        case 25:
-        case 65:
-          data.cooldownAt = now.add(1, 'day');
-          data.exp = exp + 5;
+          data.cooldownAt = now.add(11.5, 'hours');
+          data.exp = exp + 10;
           break;
         case 30:
-        case 70:
-          data.cooldownAt = now.add(2, 'days');
-          data.exp = exp + 5;
-          break;
-        case 35:
-        case 75:
-          data.cooldownAt = now.add(3, 'days');
-          data.exp = exp + 5;
+          data.cooldownAt = now.add(12, 'hours');
+          data.exp = exp + 10;
           break;
         case 40:
-        case 80:
-          data.cooldownAt = now.add(8, 'days');
-          data.exp = exp + 5;
+          data.cooldownAt = now.add(1, 'day');
+          data.exp = exp + 10;
           break;
-        case 85:
-          data.cooldownAt = now.add(1, 'days');
-          data.exp = exp + 5;
+        case 50:
+          data.cooldownAt = now.add(2, 'days');
+          data.exp = exp + 10;
+          break;
+        case 60:
+          data.cooldownAt = now.add(3, 'days');
+          data.exp = exp + 10;
+          break;
+        case 70:
+          data.cooldownAt = now.add(8, 'days');
+          data.exp = exp + 10;
+          break;
+        case 80:
+          data.cooldownAt = now.add(0.5, 'month');
+          data.exp = exp + 10;
           break;
         case 90:
-          data.cooldownAt = now.add(0.5, 'month');
-          data.exp = exp + 5;
-          break;
-        case 95:
           data.cooldownAt = now.add(1, 'hours');
-          data.exp = exp + 5;
+          data.exp = exp + 10;
           break;
         case 100:
           data.cooldownAt = now.add(1, 'hours');
@@ -175,7 +163,7 @@ export default () => {
     let exp = curRencord?.exp;
     // 经验降一级
     if (exp !== 0) {
-      exp -= 5;
+      exp -= 10;
     }
 
     const data: { [key: string]: any } = {

@@ -33,8 +33,8 @@ export default defineConfig({
   request: false,
   sass: false,
   hash: true,
-  base: '/micro//flashcard',
-  publicPath: '/micro//flashcard/',
+  base: '/micro/flashcard',
+  publicPath: '/micro/flashcard/',
   runtimePublicPath: true,
   devServer: {
     port: 80,

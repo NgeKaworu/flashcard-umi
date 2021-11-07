@@ -63,8 +63,7 @@ export default () => {
 
   const { isLoading, mutate } = useMutation(
     (data: { [key: string]: any }) => {
-      return restful.patch(`/flashcard/record/set-review-result`, {
-        data,
+      return restful.patch(`/flashcard/record/set-review-result`, data, {
         notify: 'fail',
       });
     },
@@ -264,15 +263,15 @@ export default () => {
         setFlag('success');
       } else {
         const actualDict = actual
-            ?.split(' ')
-            ?.reduce((acc: { [key: string]: number }, cur) => {
-              if (acc[cur] === undefined) {
-                acc[cur] = 1;
-              } else {
-                acc[cur]++;
-              }
-              return acc;
-            }, {}),
+          ?.split(' ')
+          ?.reduce((acc: { [key: string]: number }, cur) => {
+            if (acc[cur] === undefined) {
+              acc[cur] = 1;
+            } else {
+              acc[cur]++;
+            }
+            return acc;
+          }, {}),
           diff: Array<React.ReactNode> = answer
             ?.split(' ')
             ?.map((i: string, idx: number) => {

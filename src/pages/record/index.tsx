@@ -94,7 +94,7 @@ export default () => {
     total = datas?.[datas?.length - 1]?.total || 0;
 
   const creator = useMutation(
-    (data) => restful.post(`/flashcard/record/create`, { data }),
+    (data) => restful.post(`/flashcard/record/create`, data),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
@@ -107,7 +107,7 @@ export default () => {
   const updater = useMutation(
     (data?: { [key: string]: any }) =>
       restful.patch(`/flashcard/record/update`, {
-        data: { id: curRecrod?._id, ...data },
+        id: curRecrod?._id, ...data
       }),
     {
       onSuccess() {
@@ -129,7 +129,7 @@ export default () => {
 
   const reviewer = useMutation(
     (ids: string[]) =>
-      restful.patch(`/flashcard/record/review`, { data: { ids } }),
+      restful.patch(`/flashcard/record/review`, { ids }),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
@@ -140,7 +140,7 @@ export default () => {
   );
 
   const randomReviewer = useMutation(
-    (data) => restful.patch(`/flashcard/record/random-review`, { data }),
+    (data) => restful.patch(`/flashcard/record/random-review`, data),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');

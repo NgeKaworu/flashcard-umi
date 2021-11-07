@@ -23,11 +23,31 @@ export default defineConfig({
       ],
     },
   ],
-
+  helmet: false,
+  dva: false,
+  model: false,
+  initialState: false,
+  layout: false,
+  locale: false,
+  preact: false,
+  request: false,
+  sass: false,
   hash: true,
-  base: '/flashcard',
-  publicPath: '/flashcard/',
+  base: 'micro//flashcard',
+  publicPath: 'micro//flashcard/',
   runtimePublicPath: true,
+  devServer: {
+    port: 80,
+    proxy: {
+      '/api/flashcard': {
+        target: 'http://flashcard-egg-dev',
+        changeOrigin: true,
+        pathRewrite: {
+          '/api/flashcard': '',
+        },
+      },
+    },
+  },
   extraBabelPlugins: [
     [
       'babel-plugin-styled-components',

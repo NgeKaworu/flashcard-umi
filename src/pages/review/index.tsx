@@ -14,8 +14,8 @@ import {
 
 const { Header, Content, Footer } = Layout;
 
-import { RESTful } from '@/http';
-import { mainHost } from '@/http/host';
+import { restful } from '@/http';
+
 
 import { Record } from '@/models/record';
 import moment from 'moment';
@@ -31,8 +31,8 @@ export default () => {
   const queryClient = useQueryClient();
 
   const { data } = useQuery('review-list', () => {
-    return RESTful.get(`${mainHost()}/record/list`, {
-      silence: 'success',
+    return restful.get(`/flashcard/record/list`, {
+      notify: 'fail',
       params: {
         inReview: true,
         skip: 0,
@@ -42,8 +42,8 @@ export default () => {
   });
 
   function findOneNearestNeedReview() {
-    return RESTful.get(`${mainHost()}/record/list?sort=cooldownAt&orderby=-1`, {
-      silence: 'success',
+    return restful.get(`/flashcard/record/list?sort=cooldownAt&orderby=-1`, {
+      notify: 'fail',
       params: {
         inReview: false,
         skip: 0,
@@ -63,9 +63,9 @@ export default () => {
 
   const { isLoading, mutate } = useMutation(
     (data: { [key: string]: any }) => {
-      return RESTful.patch(`${mainHost()}/record/set-review-result`, {
+      return restful.patch(`/flashcard/record/set-review-result`, {
         data,
-        silence: 'success',
+        notify: 'fail',
       });
     },
     {

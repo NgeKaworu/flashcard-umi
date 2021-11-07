@@ -22,8 +22,8 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { SelectInfo } from 'rc-menu/lib/interface';
 
-import { RESTful } from '@/http';
-import { mainHost } from '@/http/host';
+import { restful } from '@/http';
+
 
 import RecordItem from './components/RecordItem';
 
@@ -73,8 +73,8 @@ export default () => {
         new URLSearchParams(_search),
       );
 
-      return RESTful.get(`${mainHost()}/record/list`, {
-        silence: 'success',
+      return restful.get(`/flashcard/record/list`, {
+        notify: 'fail',
         params: {
           ...params,
           skip: pageParam * limit,
@@ -94,7 +94,7 @@ export default () => {
     total = datas?.[datas?.length - 1]?.total || 0;
 
   const creator = useMutation(
-    (data) => RESTful.post(`${mainHost()}/record/create`, { data }),
+    (data) => restful.post(`/flashcard/record/create`, { data }),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
@@ -106,7 +106,7 @@ export default () => {
 
   const updater = useMutation(
     (data?: { [key: string]: any }) =>
-      RESTful.patch(`${mainHost()}/record/update`, {
+      restful.patch(`/flashcard/record/update`, {
         data: { id: curRecrod?._id, ...data },
       }),
     {
@@ -119,7 +119,7 @@ export default () => {
   );
 
   const deleter = useMutation(
-    (data?: string) => RESTful.delete(`${mainHost()}/record/remove/${data}`),
+    (data?: string) => restful.delete(`/flashcard/record/remove/${data}`),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
@@ -129,7 +129,7 @@ export default () => {
 
   const reviewer = useMutation(
     (ids: string[]) =>
-      RESTful.patch(`${mainHost()}/record/review`, { data: { ids } }),
+      restful.patch(`/flashcard/record/review`, { data: { ids } }),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
@@ -140,7 +140,7 @@ export default () => {
   );
 
   const randomReviewer = useMutation(
-    (data) => RESTful.patch(`${mainHost()}/record/random-review`, { data }),
+    (data) => restful.patch(`/flashcard/record/random-review`, { data }),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');
@@ -151,7 +151,7 @@ export default () => {
   );
 
   const allReviewer = useMutation(
-    (data) => RESTful.get(`${mainHost()}/record/review-all`),
+    (data) => restful.get(`/flashcard/record/review-all`),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');

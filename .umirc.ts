@@ -40,7 +40,7 @@ export default defineConfig({
     port: 80,
     proxy: {
       '/api/flashcard': {
-        target: 'http://flashcard-egg-dev',
+        target: 'http://flashcard-go-dev',
         changeOrigin: true,
         pathRewrite: {
           '/api/flashcard': '',

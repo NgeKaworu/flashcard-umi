@@ -1,5 +1,5 @@
 import { defineConfig } from 'umi';
-import theme from './theme';
+import theme from './src/theme';
 import routes from './routes';
 import base from './src/js-sdk/configs/.umirc.default';
 
@@ -11,7 +11,7 @@ export default defineConfig({
   base: '/flashcard',
   publicPath: '/micro/flashcard/',
   devServer: {
-    port: 80,
+    port: 8031,
     proxy: {
       '/api/flashcard': {
         target: 'http://localhost:8030',

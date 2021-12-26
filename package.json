@@ -7,7 +7,9 @@
     "postinstall": "umi generate tmp",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
     "test": "umi-test",
-    "test:coverage": "umi-test --coverage"
+    "test:coverage": "umi-test --coverage",
+    "spush": "git subtree push -P src/js-sdk js-sdk master",
+    "spull": "git subtree pull -P src/js-sdk js-sdk master --squash"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"

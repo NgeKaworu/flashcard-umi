@@ -22,8 +22,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { SelectInfo } from 'rc-menu/lib/interface';
 
-import { restful } from '@/http';
-
+import { restful } from '@/js-sdk/utils/http';
 
 import RecordItem from './components/RecordItem';
 
@@ -107,7 +106,8 @@ export default () => {
   const updater = useMutation(
     (data?: { [key: string]: any }) =>
       restful.patch(`/flashcard/record/update`, {
-        id: curRecrod?._id, ...data
+        id: curRecrod?._id,
+        ...data,
       }),
     {
       onSuccess() {
@@ -128,8 +128,7 @@ export default () => {
   );
 
   const reviewer = useMutation(
-    (ids: string[]) =>
-      restful.patch(`/flashcard/record/review`, { ids }),
+    (ids: string[]) => restful.patch(`/flashcard/record/review`, { ids }),
     {
       onSuccess() {
         queryClient.invalidateQueries('records-list');

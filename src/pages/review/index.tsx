@@ -14,14 +14,12 @@ import {
 
 const { Header, Content, Footer } = Layout;
 
-import { restful } from '@/http';
-
-
 import { Record } from '@/models/record';
 import moment from 'moment';
 
 import styles from '@/index.less';
 import reviewStyles from './index.less';
+import { restful } from '@/js-sdk/utils/http';
 
 type ReviewType = 'normal' | 'success' | 'fail';
 export default () => {
@@ -42,14 +40,16 @@ export default () => {
   });
 
   function findOneNearestNeedReview() {
-    return restful.get(`/flashcard/record/list?sort=cooldownAt&orderby=-1`, {
-      notify: 'fail',
-      params: {
-        inReview: false,
-        skip: 0,
-        limit: 1,
-      },
-    }).then((data: any) => data);
+    return restful
+      .get(`/flashcard/record/list?sort=cooldownAt&orderby=-1`, {
+        notify: 'fail',
+        params: {
+          inReview: false,
+          skip: 0,
+          limit: 1,
+        },
+      })
+      .then((data: any) => data);
   }
 
   const datas = data?.data,
@@ -263,15 +263,15 @@ export default () => {
         setFlag('success');
       } else {
         const actualDict = actual
-          ?.split(' ')
-          ?.reduce((acc: { [key: string]: number }, cur) => {
-            if (acc[cur] === undefined) {
-              acc[cur] = 1;
-            } else {
-              acc[cur]++;
-            }
-            return acc;
-          }, {}),
+            ?.split(' ')
+            ?.reduce((acc: { [key: string]: number }, cur) => {
+              if (acc[cur] === undefined) {
+                acc[cur] = 1;
+              } else {
+                acc[cur]++;
+              }
+              return acc;
+            }, {}),
           diff: Array<React.ReactNode> = answer
             ?.split(' ')
             ?.map((i: string, idx: number) => {

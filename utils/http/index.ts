@@ -121,7 +121,8 @@ restful.interceptors.response.use(function (response) {
 restful.interceptors.response.use(function (response: CustomResponse) {
   const { data, config } = response;
   if ([true, 'success']?.includes(config?.notify ?? false)) {
-    message.success({ content: data?.message || '操作成功' });
+    const content = data?.message || '操作成功';
+    message.success({ content, key: content });
   }
   return data;
 });
@@ -150,15 +151,16 @@ restful.interceptors.response.use(undefined, (error: CustomError) => {
   // silence标记为true 则不显示消息
   if ([true, 'fail']?.includes(notify ?? true)) {
     const netErrMsg = eMsg.match('Network Error') && '网络错误，请检查网络。';
-
+    const content =
+      // 网络错误
+      netErrMsg ||
+      eMsg ||
+      // 错误码错误
+      codeMessage[response?.status as number] ||
+      '未知错误';
     message.error({
-      content:
-        // 网络错误
-        netErrMsg ||
-        eMsg ||
-        // 错误码错误
-        codeMessage[response?.status as number] ||
-        '未知错误',
+      key: content,
+      content,
     });
   }
 

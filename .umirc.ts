@@ -1,46 +1,20 @@
 import { defineConfig } from 'umi';
 import theme from './src/theme';
+import routes from './routes';
+import base from './src/js-sdk/configs/.umirc.default';
 
 export default defineConfig({
+  ...base,
   title: '单词卡',
-  qiankun: {
-    slave: {},
-  },
-  fastRefresh: {},
-  nodeModulesTransform: {
-    type: 'none',
-  },
   theme,
-  routes: [
-    {
-      path: '/',
-      component: '@/layouts/',
-      routes: [
-        { path: '/', redirect: '/record/' },
-        { path: '/record/', component: 'record' },
-        { path: '/review/', component: 'review' },
-        // { redirect: '/record/' },
-      ],
-    },
-  ],
-  helmet: false,
-  dva: false,
-  model: false,
-  initialState: false,
-  layout: false,
-  locale: false,
-  preact: false,
-  request: false,
-  sass: false,
-  hash: true,
-  base: '/micro/flashcard',
+  routes,
+  base: '/flashcard',
   publicPath: '/micro/flashcard/',
-  runtimePublicPath: true,
   devServer: {
     port: 80,
     proxy: {
       '/api/flashcard': {
-        target: 'http://flashcard-go-dev',
+        target: 'http://localhost:8030',
         changeOrigin: true,
         pathRewrite: {
           '/api/flashcard': '',
@@ -56,8 +30,4 @@ export default defineConfig({
       },
     ],
   ],
-  externals: {
-    moment: 'moment',
-  },
-  scripts: ['https://lib.baomitu.com/moment.js/latest/moment.min.js'],
 });

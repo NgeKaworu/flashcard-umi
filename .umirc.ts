@@ -1,5 +1,5 @@
 import { defineConfig } from 'umi';
-import theme from './src/theme';
+import theme from './theme';
 import routes from './routes';
 import base from './src/js-sdk/configs/.umirc.default';
 

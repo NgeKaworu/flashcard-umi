@@ -22,12 +22,4 @@ export default defineConfig({
       },
     },
   },
-  extraBabelPlugins: [
-    [
-      'babel-plugin-styled-components',
-      {
-        namespace: 'flashcard',
-      },
-    ],
-  ],
 });

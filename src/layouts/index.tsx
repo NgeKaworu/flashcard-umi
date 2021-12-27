@@ -9,37 +9,9 @@ import { FormOutlined, SyncOutlined } from '@ant-design/icons';
 const { Content, Footer } = Layout;
 
 import zhCN from 'antd/es/locale/zh_CN';
-import theme from '@/theme';
-import styled from 'styled-components';
 import styles from './index.less';
 
 const queyClient = new QueryClient();
-
-interface MenuItemProps {
-  active: boolean;
-}
-const MenuItem = styled.div<MenuItemProps>`
-  .anticon {
-    font-size: 28px;
-  }
-  font-size: 12px;
-  flex: 1;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  opacity: ${(props: Record<string, any>) => (props.active ? 1 : 0.9)};
-  color: ${(props: Record<string, any>) =>
-    props.active ? theme['primary-color'] : '#000'};
-  cursor: pointer;
-  :hover {
-    color: ${theme['primary-color']};
-    opacity: 1;
-  }
-  :active {
-    opacity: 0.5;
-  }
-`;
 
 const menu = [
   {
@@ -71,15 +43,18 @@ export default (props: PropsWithChildren<any>) => {
           <Content>{props.children}</Content>
           <Footer className={styles['footer-menu']}>
             {menu.map((i) => (
-              <MenuItem
+              <div
+                className={[
+                  styles?.['menu-item'],
+                  i.path.includes(pathname) && styles?.['active'],
+                ]?.join(' ')}
                 key={i.path}
                 data-path={i.path}
-                active={i.path.includes(pathname)}
                 onClick={onMenuClick}
               >
                 {i.icon}
                 {i.title}
-              </MenuItem>
+              </div>
             ))}
           </Footer>
         </Layout>

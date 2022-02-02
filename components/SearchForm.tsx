@@ -21,11 +21,11 @@ export interface SearchFormProps {
  */
 export default ({ formProps, children }: PropsWithChildren<SearchFormProps>) => {
   const history = useHistory();
-  const { onFinish, onReset, ...restFormProps } = formProps || {};
-  const [form] = Form.useForm(restFormProps?.form);
+  const { onFinish, onReset, name, form: outerForm, ...restFormProps } = formProps || {};
+  const [form] = outerForm ? [outerForm] : Form.useForm();
 
   const _location = history.location;
-  const formName = restFormProps?.name ?? 'search_form';
+  const formName = name ?? 'search_form';
 
   useLayoutEffect(() => {
     const params = new URLSearchParams(_location.search).get(`_${formName}`);

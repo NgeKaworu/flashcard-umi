@@ -10,11 +10,13 @@ export default defineConfig({
   routes,
   base: '/flashcard',
   publicPath: '/micro/flashcard/',
+  webpack5: {},
   devServer: {
     port: 8031,
     proxy: {
       '/api/flashcard': {
-        target: 'http://localhost:8030',
+        target: 'https://api.furan.xyz/flashcard',
+        // target: 'http://localhost:8030',
         changeOrigin: true,
         pathRewrite: {
           '/api/flashcard': '',

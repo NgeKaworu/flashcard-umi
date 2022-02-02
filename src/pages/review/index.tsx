@@ -12,7 +12,8 @@ import {
   Divider,
 } from 'antd';
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content, Footer } = Layout,
+  ua = navigator.userAgent?.toLowerCase();
 
 import { Record } from '@/models/record';
 import moment from 'moment';
@@ -297,9 +298,14 @@ export default () => {
     });
   }
 
-  function onHotKey({ key, metaKey }: React.KeyboardEvent) {
-    if (key === 'Enter' && metaKey) {
-      submitHandler();
+  function onHotKey({ key, metaKey, ctrlKey }: React.KeyboardEvent) {
+    if (key === 'Enter') {
+      if (
+        (ua?.includes('windows') && ctrlKey) ||
+        (ua?.includes('mac') && metaKey)
+      ) {
+        submitHandler();
+      }
     }
   }
 

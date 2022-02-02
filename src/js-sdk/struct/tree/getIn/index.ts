@@ -1,10 +1,11 @@
 export type Key = string | number | symbol;
 
-export default <T extends unknown>(obj: T, path: Key | Key[]) => {
-  const safePath = ([] as any).concat(path);
-  let cur: any = obj;
+export default (obj: Record<Key, any> | any[], path: Key | Key[] | readonly Key[]) => {
+  const safePath = ([] as Key[]).concat(path);
+  let cur = obj;
   for (const key of safePath) {
-    cur = cur?.[key];
+    if (typeof cur !== 'object' || cur === null) return void 0;
+    cur = (cur as Record<Key, any>)?.[key];
   }
   return cur;
 };

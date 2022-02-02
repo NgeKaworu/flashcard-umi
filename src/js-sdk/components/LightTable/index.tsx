@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref, CSSProperties } from 'react';
 import { Table } from 'antd';
 import type { TableProps, TableColumnProps } from 'antd';
 import type { ParagraphProps } from 'antd/lib/typography/Paragraph';
@@ -13,7 +13,6 @@ import { _valueTypeRegister } from './valueTypeRegister';
 import prune from '../../struct/tree/prune';
 import trimEndWith from '../../struct/string/trimEndWith';
 import isValidValue from '../../utils/isValidValue';
-import React from 'react';
 
 const { Paragraph, Link } = Typography;
 
@@ -33,10 +32,13 @@ export interface LightColumnProps<RecordType>
   valueType?: ValueType;
   prefix?: string;
   suffix?: string;
+  decimal?: number;
 
   columnEmptyText?: ReactNode;
 
   hideInTable?: boolean;
+
+  ref?: Ref<HTMLDivElement>;
 }
 
 export const globalRenderKey = ['columnEmptyText'] as const;
@@ -53,6 +55,8 @@ export const renderKey = [
   'valueType',
   'prefix',
   'suffix',
+
+  'decimal',
 ] as const;
 
 export const allRenderKey = [...globalRenderKey, ...renderKey] as const;
@@ -111,7 +115,10 @@ function _tsumugi<RecordType>(
   const { basicRenderNode, ...node } = _toLightRenderNode(_factory(c));
 
   const chain = new RenderChain(basicRenderNode);
-  const prepend = _pickNode(['valueEnum', 'valueType', 'prefix', 'suffix', 'paragraph'], node),
+  const prepend = _pickNode(
+      ['valueEnum', 'valueType', 'decimal', 'prefix', 'suffix', 'paragraph'],
+      node,
+    ),
     append = _pickNode(['columnEmptyText'], node);
 
   chain.Prepend(basicRenderNode, ...prepend)?.Append(basicRenderNode, ...append);
@@ -184,6 +191,7 @@ function _factory<RecordType>(
     columnEmptyText,
     link,
     paragraph,
+    decimal,
   } = allRenderKey?.reduce(
     (acc: Pick<LightColumnProps<RecordType>, typeof allRenderKey[number]>, cur) =>
       c[cur] ? { ...acc, [cur]: c[cur] } : acc,
@@ -223,6 +231,7 @@ function _factory<RecordType>(
     prefixRender: _safeRender((v) => `${prefix}${v}`),
     suffixRender: _safeRender((v) => `${v}${suffix}`),
     columnEmptyTextRender: (v) => v ?? columnEmptyText,
+    decimalRender: _safeRender((t: number | string) => (+t).toFixed(decimal)),
   };
 
   const extra = prune(
@@ -244,8 +253,8 @@ function _factory<RecordType>(
 function _calcEllipsisWidth<RecordType>({
   ellipsis,
   width = 'inherit',
-}: LightColumnProps<RecordType>): React.CSSProperties['minWidth'] {
-  let w: React.CSSProperties['minWidth'] = width;
+}: LightColumnProps<RecordType>): CSSProperties['minWidth'] {
+  let w: CSSProperties['minWidth'] = width;
 
   if (typeof w === 'number' || !Number.isNaN(+w)) w = w + 'px';
 

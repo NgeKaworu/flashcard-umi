@@ -1,3 +1,4 @@
+import type { MutableRefObject, ReactNode, Ref } from 'react'
 import { Card } from 'antd';
 import type { FormInstance, FormProps } from 'antd';
 import type { LightColumnProps, LightTableProps } from '../LightTable';
@@ -23,7 +24,7 @@ export interface LightTableProColumnProps<RecordType>
     SearchColumnsProps<RecordType> {}
 export interface LightTableProProps<RecordType>
   extends Omit<LightTableProps<RecordType>, 'columns'> {
-  formRef?: React.MutableRefObject<FormInstance | undefined>;
+  formRef?: MutableRefObject<FormInstance | undefined>;
   formProps?: FormProps;
   columns?: LightTableProColumnProps<RecordType>[];
   manualRequest?: boolean;
@@ -52,9 +53,11 @@ export interface LightTableProProps<RecordType>
     total: number;
     page: number;
   }>;
-  actionRef?: React.MutableRefObject<ActionRef | undefined>;
-  headerTitle?: React.ReactNode;
-  toolBarRender?: React.ReactNode;
+  actionRef?: MutableRefObject<ActionRef | undefined>;
+  headerTitle?: ReactNode;
+  toolBarRender?: ReactNode;
+
+  tableCardRef?: Ref<HTMLDivElement>;
 }
 
 export default function LightTablePro<RecordType extends Record<any, any> = any>({
@@ -70,6 +73,7 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
   headerTitle,
   toolBarRender,
   children,
+  tableCardRef,
   ...props
 }: LightTableProProps<RecordType>) {
   const {
@@ -105,6 +109,7 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
         />
       </Card>
       {children}
+      <div ref={tableCardRef}>
       <Card>
         <div className={`${styles.flex} ${styles.column}`}>
           <div className={`${styles.flex} ${styles?.['space-between']}`}>
@@ -123,6 +128,7 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
           />
         </div>
       </Card>
+      </div>
     </div>
   );
 }

@@ -73,37 +73,41 @@ export default <RecordType extends Record<string, any> = any>({
           }));
 
           const body = (
-            <>
-              <Item noStyle shouldUpdate={shouldUpdateManyHOF([name])}>
-                {({ getFieldValue }) => (
-                  <Table
-                    onRow={(_, idx) =>
-                      ({
-                        name,
-                        field: fields?.[idx as number],
-                        fields,
-                        operation,
-                        meta,
-                      } as any)
-                    }
-                    components={{
-                      body: {
-                        cell: DnDCell,
-                        row: DnDRow,
-                      },
-                    }}
-                    dataSource={getFieldValue(name)}
-                    pagination={false}
-                    columns={injectColumns}
-                    {...restTableProps}
-                  />
-                )}
-              </Item>
-              <ErrorList errors={meta?.errors} />
-            </>
+            <Item noStyle shouldUpdate={shouldUpdateManyHOF([name])}>
+              {({ getFieldValue }) => (
+                <Table
+                  onRow={(_, idx) =>
+                    ({
+                      name,
+                      field: fields?.[idx as number],
+                      fields,
+                      operation,
+                      meta,
+                    } as any)
+                  }
+                  components={{
+                    body: {
+                      cell: DnDCell,
+                      row: DnDRow,
+                    },
+                  }}
+                  dataSource={getFieldValue(name)}
+                  pagination={false}
+                  columns={injectColumns}
+                  {...restTableProps}
+                />
+              )}
+            </Item>
           );
 
-          return children?.({ body, fields, operation, meta }) ?? body;
+          return (
+            children?.({ body, fields, operation, meta }) ?? (
+              <>
+                {body}
+                <ErrorList errors={meta?.errors} />
+              </>
+            )
+          );
         }}
       </List>
     </div>

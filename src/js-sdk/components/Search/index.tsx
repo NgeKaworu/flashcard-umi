@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
-import { createElement, useRef } from 'react';
+import { createElement } from 'react';
 import type { ColProps } from 'antd';
 import { Button, Col, Form, Input, Row, Space } from 'antd';
 import type { FormItemProps, TableColumnProps } from 'antd';
@@ -48,7 +48,6 @@ export default <RecordType extends Record<any, any> = any>({
   colProps,
   btnExtra: btnExtra,
 }: SearchProps<RecordType>) => {
-  const wrapCard = useRef<HTMLElement>(null);
   const [innerForm] = Form.useForm(formProps?.form);
 
   const defaultCol = colProps || {
@@ -60,12 +59,8 @@ export default <RecordType extends Record<any, any> = any>({
     xxl: 6,
   };
 
-  function onFinish(value: any) {
-    formProps?.onFinish?.(value);
-  }
-
   return (
-    <SearchForm formProps={{ labelAlign: 'left', ...formProps, onFinish }}>
+    <SearchForm formProps={{ labelAlign: 'left', ...formProps }}>
       <Row style={{ margin: 0 }} gutter={16}>
         {/**
          * 渲染逻辑

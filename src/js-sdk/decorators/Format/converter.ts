@@ -24,6 +24,9 @@ export const str2fileList = (value?: string): FileList =>
     ? [{ uid: value, response: value, url: value, thumbUrl: value, name: value }]
     : value;
 
+export const fileList2str = (fileList?: FileList): string | FileList =>
+  fileList?.[0]?.response ?? fileList;
+
 export const uploadEvent2str: FormItemProps['normalize'] = (value) => value?.[0]?.response ?? value;
 
 // multiple file

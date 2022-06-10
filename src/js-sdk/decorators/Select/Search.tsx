@@ -1,4 +1,4 @@
-import { ignoreCaseIncludes } from '@/js-sdk/struct/string/util';
+import { ignoreCaseIncludes } from '../../struct/string/util';
 import type React from 'react';
 import { cloneElement } from 'react';
 /**

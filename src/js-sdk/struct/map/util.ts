@@ -20,3 +20,16 @@ export function MapReduce<
   }
   return acc;
 }
+
+export function MapMap<mk, mv>(
+  m: Map<mk, mv>,
+  mapper: (k: mk, v: mv, i: number, cur: Map<mk, mv>) => any,
+) {
+  const nm = new Map();
+  let i = 0;
+  for (const [k, v] of m) {
+    nm.set(k, mapper(k, v, i, m));
+    i++;
+  }
+  return nm;
+}

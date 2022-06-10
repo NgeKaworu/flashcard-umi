@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-import { FormInstance } from 'antd';
-import type { ActionRef } from '../';
+import type { FormInstance } from 'antd';
+import type { ActionRef } from '..';
 
 export interface InitValue {
   actionRef?: ActionRef;

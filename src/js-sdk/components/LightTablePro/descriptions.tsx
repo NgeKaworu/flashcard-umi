@@ -1,16 +1,18 @@
 import type { MutableRefObject, ReactNode, Ref } from 'react';
-import { Card } from 'antd';
-import type { FormInstance, FormProps } from 'antd';
+import { Card, Descriptions, Pagination } from 'antd';
+import type { FormInstance, FormProps, DescriptionsProps, PaginationProps, TableProps } from 'antd';
 import type { LightColumnProps, LightTableProps } from '../LightTable';
-import LightTable from '../LightTable';
 import type { SearchColumnsProps } from '../Search';
 import Search from '../Search';
 import type { QueryKey, QueryFunction, UseQueryOptions } from 'react-query';
 import useWrap from './hook/useWrap';
 import styles from './index.less';
+import getIn from '@/edk/struct/tree/getIn';
 
 export { default as useLightTablePro } from './hook/useLightTablePro';
 export { default as useWrap } from './hook/useWrap';
+
+const { Item } = Descriptions;
 
 type RequestParameters<RecordType> = Parameters<
   NonNullable<LightTableProps<RecordType>['onChange']>
@@ -25,8 +27,10 @@ export interface ActionRef {
 export interface LightTableProColumnProps<RecordType>
   extends LightColumnProps<RecordType>,
     SearchColumnsProps<RecordType> {}
-export interface LightTableProProps<RecordType>
-  extends Omit<LightTableProps<RecordType>, 'columns'> {
+
+export interface LightDescriptionsProProps<RecordType> extends DescriptionsProps {
+  rowKey?: TableProps<RecordType>['rowKey'];
+  pagination?: PaginationProps;
   formRef?: MutableRefObject<FormInstance | undefined>;
   formProps?: FormProps;
   columns?: LightTableProColumnProps<RecordType>[];
@@ -63,7 +67,7 @@ export interface LightTableProProps<RecordType>
   tableCardRef?: Ref<HTMLDivElement>;
 }
 
-export default function LightTablePro<RecordType extends Record<any, any> = any>({
+export default function LightDescriptionsPro<RecordType extends Record<any, any> = any>({
   columns,
   formRef,
   actionRef,
@@ -78,7 +82,7 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
   children,
   tableCardRef,
   ...props
-}: LightTableProProps<RecordType>) {
+}: LightDescriptionsProProps<RecordType>) {
   const {
     formHandler,
     tableHandler,
@@ -119,16 +123,40 @@ export default function LightTablePro<RecordType extends Record<any, any> = any>
               <div>{headerTitle}</div>
               <div>{toolBarRender}</div>
             </div>
+            {tableHandler?.dataSource?.map((d) => (
+              <Descriptions
+                key={
+                  typeof props?.rowKey === 'function'
+                    ? props?.rowKey?.(d)
+                    : d[props?.rowKey ?? 'id']
+                }
+                {...props}
+              >
+                {columns?.reduce((acc: ReactNode[], c, i) => {
+                  const { hideInTable, dataIndex, render } = c;
+                  if (!dataIndex || hideInTable) return acc;
+                  const r = render,
+                    v = getIn(d, dataIndex),
+                    dom = r?.(v, d, i) ?? v;
+                  if (!dom) return acc;
+                  return acc.concat(
+                    <Item key={`${c?.dataIndex}`} label={c.title} span={c.colSpan ?? c.colSize}>
+                      {dom}
+                    </Item>,
+                  );
+                }, [])}
+              </Descriptions>
+            ))}
 
-            <LightTable<RecordType>
-              size="small"
-              sticky
-              columnEmptyText="-"
-              bordered
-              columns={columns}
-              {...tableHandler}
-              {...props}
-            />
+            <div className={styles?.pagination}>
+              <Pagination
+                {...tableHandler.pagination}
+                size="small"
+                onChange={(current, pageSize) =>
+                  tableHandler?.onChange?.({ current, pageSize }, {}, {}, {} as any)
+                }
+              />
+            </div>
           </div>
         </Card>
       </div>

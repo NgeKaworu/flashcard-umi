@@ -1,6 +1,6 @@
 import 'jest';
 
-import isValidValue from './';
+import isValidValue from '.';
 
 describe('isValidValue test', () => {
   it('[] is not valid', () => {

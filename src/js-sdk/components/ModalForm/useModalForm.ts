@@ -43,5 +43,6 @@ export default (initValue?: InitValue) => {
     setFormProps,
     data,
     setData,
+    close,
   };
 };

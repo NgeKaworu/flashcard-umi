@@ -1,10 +1,10 @@
 import React, { cloneElement, useEffect, useState } from 'react';
 import { Empty, Spin } from 'antd';
-import ChildrenRender from '../../../components/ChildrenRender';
+import ChildrenRender from '../../ChildrenRender';
 import { FlatTree } from '../../LieTree/utils/flatTree';
 import { Tree } from '../../LieTree/utils/tree';
 import { uniqueRight } from '../../LieTree/utils';
-import { curry } from '../../..//decorators/utils';
+import { curry } from '../../../decorators/utils';
 
 export interface LieTreeAsyncParams {
   request: (value?: Tree) => Promise<FlatTree[]>;

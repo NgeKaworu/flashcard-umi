@@ -2,24 +2,26 @@ import { useState } from 'react';
 import type { FormInstance, FormProps } from 'antd';
 import { Form } from 'antd';
 
-import type { CustomDrawerProps } from '.';
+export type ContainerProps<T> = T & {
+  onClose?: (...args: any) => void;
+  confirmLoading?: boolean;
+  visible?: boolean;
+};
 
-export interface InitValue {
-  drawerProps?: CustomDrawerProps;
+export interface InitValue<T> {
+  containerProps?: ContainerProps<T>;
   formProps?: FormProps;
   data?: any;
   form?: FormInstance;
 }
 
-export default (initValue?: InitValue) => {
+export default <T>(initValue?: InitValue<T>) => {
   const [form] = Form.useForm(initValue?.form);
 
-  const [drawerProps, setDrawerProps] = useState<CustomDrawerProps>({
-    width: 800,
+  const [containerProps, setContainerProps] = useState<ContainerProps<T>>({
     onClose: close,
-    placement: 'right',
-    ...initValue?.drawerProps,
-  });
+    ...initValue?.containerProps,
+  } as ContainerProps<T>);
 
   const [formProps, setFormProps] = useState<FormProps>({
     form,
@@ -31,15 +33,15 @@ export default (initValue?: InitValue) => {
   const [data, setData] = useState<any>(initValue?.data);
 
   function close() {
-    setDrawerProps((pre) => ({ ...pre, visible: false }));
+    setContainerProps((pre) => ({ ...pre, visible: false }));
     form.resetFields();
     setData(undefined);
   }
 
   return {
     form,
-    drawerProps,
-    setDrawerProps,
+    containerProps,
+    setContainerProps,
     formProps,
     setFormProps,
     data,

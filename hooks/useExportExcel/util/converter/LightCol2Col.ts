@@ -1,4 +1,4 @@
-import type { LightTableProColumnProps } from '@/EDK/components/LightTablePro';
+import type { LightTableProColumnProps } from '../../../../components/LightTablePro';
 import type { ExportColumns, ExportColumn } from '..';
 
 export type Exportable<T extends Record<any, any> = any, R = T> = T &

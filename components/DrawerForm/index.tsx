@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react';
 import { Form, Drawer, Space, Button } from 'antd';
 import type { DrawerProps } from 'antd';
 import type { InitValue } from './useDrawerForm';
-import React from 'react';
+export { default as useDrawerForm } from './useDrawerForm';
 
 export default ({ children, drawerProps, formProps }: PropsWithChildren<InitValue>) => (
   <CustomDrawer {...drawerProps}>

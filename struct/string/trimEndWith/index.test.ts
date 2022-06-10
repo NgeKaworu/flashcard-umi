@@ -1,6 +1,6 @@
 import 'jest';
 
-import trimEndWith from './';
+import trimEndWith from '.';
 
 describe('trimEndWith test', () => {
   it('12345 trimEnd with 345 eq 12', () => {

@@ -1,5 +1,5 @@
-import type { Node } from './';
-import Chain from './';
+import type { Node } from '.';
+import Chain from '.';
 
 describe('chian test', () => {
   class TestChain extends Chain<Node> {}

@@ -1,8 +1,6 @@
 import AMap from '@/edk/utils/aMap/singleton/aMap';
 import Plugin from '@/edk/utils/aMap/plugin';
 
-import config from '@/config/aMap';
-
 import { useQuery } from 'react-query';
 import { reject } from 'lodash';
 import type { CascaderProps } from 'antd';
@@ -36,8 +34,8 @@ type Props<T> = CascaderProps<T> & {
   districtConfig?: DistrictConfig;
 };
 
-export default <T extends any = any>({ districtConfig, ...cascaderProps }: Props<T>) => {
-  const aMap = new AMap(config);
+export default <T extends any = any>({ mapConfig, districtConfig, ...cascaderProps }: Props<T>) => {
+  const aMap = new AMap(mapConfig);
   const districtSearch = new Plugin('DistrictSearch', aMap, {
     // 关键字对应的行政区级别，country表示国家
     level: 'province',

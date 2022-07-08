@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { useState } from 'react';
 import type { MarqueeProps } from '../Marquee';
 import Marquee from '../Marquee';
-import styles from './index.less';
+import styles from './index.module.less';
 import { Tooltip, Typography } from 'antd';
 import trimEndWith from '../../struct/string/trimEndWith';
 import arr from '../../struct/array/arr';

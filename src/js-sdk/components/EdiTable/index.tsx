@@ -6,7 +6,7 @@ import type { FormListProps } from 'antd/lib/form/FormList';
 import type { ColumnType } from 'antd/lib/table';
 import { useDrag, useDrop } from 'react-dnd';
 
-import styles from './index.less';
+import styles from './index.module.less';
 import { shouldUpdateManyHOF } from '../../decorators/shouldUpdateHOF';
 import React from 'react';
 
@@ -40,11 +40,11 @@ export interface EdiTableProps<RecordType> {
 
 const { List, Item, ErrorList } = Form;
 
-export default <RecordType extends Record<string, any> = any>({
+export default function EdiTable<RecordType extends Record<string, any> = any>({
   formListProps,
   tableProps,
   children,
-}: EdiTableProps<RecordType>) => {
+}: EdiTableProps<RecordType>) {
   const name = formListProps?.name;
 
   const { columns, ...restTableProps } = tableProps;
@@ -112,7 +112,7 @@ export default <RecordType extends Record<string, any> = any>({
       </List>
     </div>
   );
-};
+}
 
 export function DnDRow({
   name,

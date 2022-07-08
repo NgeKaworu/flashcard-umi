@@ -9,12 +9,11 @@ export interface InitValue {
   form?: FormInstance;
 }
 
-export default (initValue?: InitValue) => {
+export default function useModalForm(initValue?: InitValue) {
   const [form] = Form.useForm(initValue?.form);
 
   const [modalProps, setModalProps] = useState<ModalProps>({
     width: 600,
-    bodyStyle: { maxHeight: '66.6vh', overflow: 'scroll' },
     onCancel: close,
     ...initValue?.modalProps,
   });
@@ -45,4 +44,4 @@ export default (initValue?: InitValue) => {
     setData,
     close,
   };
-};
+}

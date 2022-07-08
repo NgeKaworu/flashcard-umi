@@ -1,7 +1,7 @@
 import { Select, SelectProps } from 'antd';
 import LieTree, { LieTreeProps } from '../LieTree';
 import { Tree } from '../LieTree/utils/tree';
-import styles from './index.less';
+import styles from './index.module.less';
 
 export interface LieTreeSelectProps<VT = unknown> {
   selectProps?: SelectProps<VT>;

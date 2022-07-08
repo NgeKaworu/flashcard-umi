@@ -1,4 +1,4 @@
-import styles from './index.less';
+import styles from './index.module.less';
 
 import React from 'react';
 
@@ -19,4 +19,4 @@ export default (({ children, maskProps, containerProps, toolbarProps, disabled }
         <span {...toolbarProps} className={styles['mask-tool-bar']} />
       </span>
     </div>
-  )) as React.FC<MaskProps>;
+  )) as React.FC<React.PropsWithChildren<MaskProps>>;

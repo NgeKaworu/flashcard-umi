@@ -1,10 +1,12 @@
 import getIn from '../struct/tree/getIn';
 import type { FormItemProps } from 'antd';
 
-export default (name: FormItemProps['name']): FormItemProps['shouldUpdate'] => {
+export default function shouldUpdateHOF(
+  name: FormItemProps['name'],
+): FormItemProps['shouldUpdate'] {
   const safePath = ([] as any).concat(name);
   return (p, n) => getIn(p, safePath) !== getIn(n, safePath);
-};
+}
 
 export function shouldUpdateManyHOF(names: FormItemProps['name'][]): FormItemProps['shouldUpdate'] {
   return (p, n) =>

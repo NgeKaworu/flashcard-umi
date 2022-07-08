@@ -6,7 +6,7 @@ import type { SearchColumnsProps } from '../Search';
 import Search from '../Search';
 import type { QueryKey, QueryFunction, UseQueryOptions } from 'react-query';
 import useWrap from './hook/useWrap';
-import styles from './index.less';
+import styles from './index.module.less';
 import getIn from '@/edk/struct/tree/getIn';
 
 export { default as useLightTablePro } from './hook/useLightTablePro';

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Checkbox, Empty, Input, Space, Spin } from 'antd';
 import { AutoSizer, List, ListProps } from 'react-virtualized';
-import styles from './index.less';
+import styles from './index.module.less';
 
 import { FlatTree } from './utils/flatTree';
 import { setTo, getIn, Tree, getProgeny, getAble, isProgenyGenealogyKey } from './utils/tree';

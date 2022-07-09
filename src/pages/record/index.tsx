@@ -39,7 +39,7 @@ import {
 
 type inputType = '' | '新建' | '编辑';
 
-const limit = 10;
+const limit = 15;
 
 export default () => {
   const [sortForm] = Form.useForm();
@@ -298,7 +298,6 @@ export default () => {
       <div style={{ ...style, padding: 12, paddingTop: 0 }} key={record?._id}>
         {isItemLoaded({ index }) ? (
           <RecordItem
-            key={record?._id}
             record={record}
             selected={selected}
             onClick={onItemClick}
@@ -388,7 +387,6 @@ export default () => {
                       background: '#f0f2f5',
                       paddingTop: '76px',
                       paddingBottom: '128px',
-                      minHeight: '200vh',
                     }}
                     {...winProps}
                     ref={(ref) => registerChild(winRef(ref))}

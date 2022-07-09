@@ -281,12 +281,12 @@ export default () => {
       sourceRows =
         Math.ceil(((source?.length ?? 1) * 14) / baseWidth) +
         (source?.split('\n')?.length ?? 0),
-      sourceHeight = Math.max(sourceRows * 15, 66),
+      sourceHeight = Math.max(sourceRows * 22, 66),
       translationRows =
         Math.ceil(((translation?.length ?? 1) * 14) / baseWidth) +
         (translation?.split('\n')?.length ?? 0),
-      translationHeight = Math.max(translationRows * 15, 66);
-    return sourceHeight + translationHeight + 50 + 56;
+      translationHeight = Math.max(translationRows * 22, 66);
+    return sourceHeight + translationHeight + 49 + 56;
   };
 
   // Render an item or a loading indicator.
@@ -295,7 +295,7 @@ export default () => {
     const selected = selectedItems.some((s) => s === record?._id);
 
     return (
-      <div style={{ ...style, padding: '6px 0' }} key={record?._id}>
+      <div style={{ ...style, padding: 12, paddingTop: 0 }} key={record?._id}>
         {isItemLoaded({ index }) ? (
           <RecordItem
             key={record?._id}
@@ -306,7 +306,7 @@ export default () => {
             onRemoveClick={onItemRemoveClick}
           />
         ) : (
-          <Card style={{ margin: '12px' }}>
+          <Card>
             <Skeleton />
           </Card>
         )}
@@ -386,7 +386,7 @@ export default () => {
                     autoHeight
                     style={{
                       background: '#f0f2f5',
-                      paddingTop: '58px',
+                      paddingTop: '76px',
                       paddingBottom: '128px',
                       minHeight: '200vh',
                     }}

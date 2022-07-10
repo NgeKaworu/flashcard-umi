@@ -387,6 +387,7 @@ export default () => {
                       background: '#f0f2f5',
                       paddingTop: '76px',
                       paddingBottom: '128px',
+                      minHeight: '200vh',
                     }}
                     {...winProps}
                     ref={(ref) => registerChild(winRef(ref))}

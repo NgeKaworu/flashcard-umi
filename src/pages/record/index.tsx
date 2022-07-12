@@ -35,6 +35,7 @@ import {
   List,
   InfiniteLoader,
   ListProps,
+  AutoSizer,
 } from 'react-virtualized';
 
 type inputType = '' | '新建' | '编辑';
@@ -88,8 +89,11 @@ export default () => {
     },
   );
 
-  const datas = data?.pages,
-    pages = datas?.reduce((acc, cur) => acc.concat(cur?.data), []),
+  const datas = data?.pages as any,
+    pages = datas?.reduce(
+      (acc: any, cur: any) => acc.concat(cur?.data),
+      [],
+    ) as any[],
     total = datas?.[datas?.length - 1]?.total || 0;
 
   const creator = useMutation(
@@ -277,15 +281,18 @@ export default () => {
 
   const getRowHeight: ListProps['rowHeight'] = ({ index }) => {
     const { source, translation } = pages[index] ?? {},
-      baseWidth = document.body.clientWidth - 48,
+      baseWidth = document.body.clientWidth - 32,
+      sourceSpace = source?.split('\n')?.length ?? 0,
       sourceRows =
-        Math.ceil(((source?.length ?? 1) * 14) / baseWidth) +
-        (source?.split('\n')?.length ?? 0),
-      sourceHeight = Math.max(sourceRows * 22, 66),
+        Math.ceil((((source?.length ?? 1) - sourceSpace) * 14) / baseWidth) +
+        sourceSpace,
+      sourceHeight = Math.max(sourceRows * 22, 22),
+      translationSpace = translation?.split('\n')?.length ?? 0,
       translationRows =
-        Math.ceil(((translation?.length ?? 1) * 14) / baseWidth) +
-        (translation?.split('\n')?.length ?? 0),
-      translationHeight = Math.max(translationRows * 22, 66);
+        Math.ceil(
+          (((translation?.length ?? 1) - translationSpace) * 14) / baseWidth,
+        ) + translationSpace,
+      translationHeight = Math.max(translationRows * 22, 22);
     return sourceHeight + translationHeight + 49 + 56;
   };
 
@@ -295,7 +302,10 @@ export default () => {
     const selected = selectedItems.some((s) => s === record?._id);
 
     return (
-      <div style={{ ...style, padding: 12, paddingTop: 0 }} key={record?._id}>
+      <div
+        style={{ ...style, padding: 4, paddingTop: index === 0 ? 4 : 0 }}
+        key={record?._id}
+      >
         {isItemLoaded({ index }) ? (
           <RecordItem
             record={record}
@@ -314,7 +324,7 @@ export default () => {
   };
 
   return (
-    <Layout>
+    <Layout className={styles['layout']}>
       <Header className={styles['header']}>
         <Menu
           mode="horizontal"
@@ -371,7 +381,7 @@ export default () => {
           </Form>
         </Modal>
       </Header>
-      <Content>
+      <Content className={styles['content']}>
         {pages?.length ? (
           <InfiniteLoader
             isRowLoaded={isItemLoaded}
@@ -379,25 +389,19 @@ export default () => {
             loadMoreRows={loadMoreItems}
           >
             {({ onRowsRendered, registerChild }) => (
-              <WindowScroller>
-                {({ registerChild: winRef, ...winProps }) => (
+              <AutoSizer>
+                {(size) => (
                   <List
-                    autoHeight
-                    style={{
-                      background: '#f0f2f5',
-                      paddingTop: '76px',
-                      paddingBottom: '128px',
-                      minHeight: '200vh',
-                    }}
-                    {...winProps}
-                    ref={(ref) => registerChild(winRef(ref))}
+                    {...size}
+                    style={{ background: '#f0f2f5' }}
+                    ref={registerChild}
                     rowCount={total}
                     onRowsRendered={onRowsRendered}
                     rowHeight={getRowHeight}
                     rowRenderer={renderItem}
                   />
                 )}
-              </WindowScroller>
+              </AutoSizer>
             )}
           </InfiniteLoader>
         ) : (
@@ -407,26 +411,29 @@ export default () => {
       <Footer className={styles['footer']}>
         <Space style={{ marginRight: '12px' }}>
           {selectedItems.length}/{total}
-          <Button type="dashed" onClick={cancelAllSelect}>
+          <Button size="small" type="dashed" onClick={cancelAllSelect}>
             取消选择
           </Button>
-          {/* <Button danger>删除所选</Button> */}
+          {/* <Button
+          size='small' danger>删除所选</Button> */}
         </Space>
         <Space>
           <Button
+            size="small"
             type="primary"
             disabled={!selectedItems.length}
             onClick={reviewHandler}
           >
             复习所选
           </Button>
-          <Button type="primary" onClick={randomReviewHandler}>
+          <Button size="small" type="primary" onClick={randomReviewHandler}>
             随机复习
           </Button>
-          <Button type="primary" onClick={reviewAllHandler}>
+          <Button size="small" type="primary" onClick={reviewAllHandler}>
             复习全部
           </Button>
           <Button
+            size="small"
             type="primary"
             shape="circle"
             icon={<PlusOutlined />}

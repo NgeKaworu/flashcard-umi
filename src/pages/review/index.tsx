@@ -223,7 +223,7 @@ export default () => {
     switch (flag) {
       case 'normal':
         return (
-          <Button disabled={total <= 1} onClick={onNext}>
+          <Button size="small" disabled={total <= 1} onClick={onNext}>
             跳过当前
           </Button>
         );
@@ -232,6 +232,7 @@ export default () => {
         return (
           <Space>
             <Button
+              size="small"
               onClick={onRemember}
               loading={isLoading}
               style={{ background: 'lightgreen' }}
@@ -241,6 +242,7 @@ export default () => {
 
             {flag === 'fail' && (
               <Button
+                size="small"
                 type="primary"
                 danger
                 onClick={onForget}
@@ -310,9 +312,9 @@ export default () => {
   }
 
   return (
-    <Layout>
+    <Layout className={styles['layout']}>
       <Header className={styles['header']}>{renderTitle()}</Header>
-      <Content className={reviewStyles['content']}>
+      <Content className={styles['content']}>
         {datas?.length ? (
           <Form className={reviewStyles['form']} form={form}>
             <Form.Item className={reviewStyles['form-item']}>
@@ -351,6 +353,7 @@ export default () => {
         <Space>
           {renderNextBtn()}
           <Button
+            size="small"
             type="primary"
             disabled={flag !== 'normal'}
             onClick={submitHandler}

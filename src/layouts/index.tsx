@@ -39,9 +39,9 @@ export default (props: PropsWithChildren<any>) => {
   return (
     <QueryClientProvider client={queyClient}>
       <ConfigProvider locale={zhCN}>
-        <Layout>
-          <Content>{props.children}</Content>
-          <Footer className={styles['footer-menu']}>
+        <Layout className={styles['layout']}>
+          <Content className={styles['content']}>{props.children}</Content>
+          <Footer className={styles['footer']}>
             {menu.map((i) => (
               <div
                 className={[

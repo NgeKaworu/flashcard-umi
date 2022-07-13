@@ -390,7 +390,9 @@ export default () => {
             loadMoreRows={loadMoreItems}
           >
             {({ onRowsRendered, registerChild }) => (
-              <WindowScroller>
+              <WindowScroller
+                scrollElement={document.querySelector('#scroll-root')}
+              >
                 {({ registerChild: winRef, ...winProps }) => (
                   <List
                     autoHeight

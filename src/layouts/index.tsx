@@ -39,7 +39,7 @@ export default (props: PropsWithChildren<any>) => {
   return (
     <QueryClientProvider client={queyClient}>
       <ConfigProvider locale={zhCN}>
-        <section className={styles['layout']}>
+        <section className={styles['layout']} id="scroll-root">
           <main>{props.children}</main>
           <footer>
             <div className={styles['footer']}>

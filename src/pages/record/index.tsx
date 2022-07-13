@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router';
 import { useInfiniteQuery, useQueryClient, useMutation } from 'react-query';
 
@@ -55,6 +55,7 @@ export default () => {
   const [inputType, setInputType] = useState<inputType>('新建');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
+  const wsRef = useRef();
   // 编辑modal使用
   const [curRecrod, setCurRecord] = useState<Record>();
 
@@ -296,10 +297,10 @@ export default () => {
   };
 
   // Render an item or a loading indicator.
-  const renderItem: ListProps['rowRenderer'] = ({ index, style }) => {
+  const renderItem: ListProps['rowRenderer'] = ({ parent, index, style }) => {
     const record = pages[index];
     const selected = selectedItems.some((s) => s === record?._id);
-
+    console.log('parent', parent);
     return (
       <div
         style={{ ...style, padding: 4, paddingTop: index === 0 ? 4 : 0 }}
@@ -311,6 +312,10 @@ export default () => {
             selected={selected}
             onClick={onItemClick}
             onEditClick={onItemEditClick}
+            onSyncClick={(e) => {
+              e.stopPropagation();
+              parent?.recomputeGridSize?.(index);
+            }}
             onRemoveClick={onItemRemoveClick}
           />
         ) : (
@@ -398,7 +403,9 @@ export default () => {
                     autoHeight
                     style={{ background: '#f0f2f5' }}
                     {...winProps}
-                    ref={(ref) => registerChild(winRef(ref))}
+                    ref={(ref) => {
+                      wsRef.current = registerChild(winRef(ref));
+                    }}
                     rowCount={total}
                     onRowsRendered={onRowsRendered}
                     rowHeight={getRowHeight}

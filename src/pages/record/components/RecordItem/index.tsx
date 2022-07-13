@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Divider, Popconfirm, Button } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, SyncOutlined } from '@ant-design/icons';
 
 import type { Record } from '@/models/record';
 import styles from './index.less';
@@ -10,6 +10,7 @@ export interface RecordItemProps {
   onClick: (id: string) => void;
   onRemoveClick: (id: string) => void;
   onEditClick: (record: Record) => void;
+  onSyncClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   record: Record;
   selected: boolean;
 }
@@ -18,6 +19,7 @@ export default ({
   onClick,
   onRemoveClick,
   onEditClick,
+  onSyncClick,
   selected,
   record,
 }: RecordItemProps) => {
@@ -51,6 +53,12 @@ export default ({
         {translation}
       </div>
       <div className={styles['tools-bar']}>
+        <Button
+          size="small"
+          type="text"
+          onClick={onSyncClick}
+          icon={<SyncOutlined />}
+        ></Button>
         <Button
           size="small"
           type="text"

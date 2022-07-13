@@ -16,7 +16,7 @@ import {
   Skeleton,
 } from 'antd';
 
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -35,7 +35,6 @@ import {
   List,
   InfiniteLoader,
   ListProps,
-  AutoSizer,
 } from 'react-virtualized';
 
 type inputType = '' | '新建' | '编辑';
@@ -324,64 +323,66 @@ export default () => {
   };
 
   return (
-    <Layout className={styles['layout']}>
-      <Header className={styles['header']}>
-        <Menu
-          mode="horizontal"
-          style={{ margin: '0 auto' }}
-          onSelect={onMenuSelect}
-          selectedKeys={selectedKeys}
-        >
-          <Menu.Item key="enable">可复习</Menu.Item>
-          <Menu.Item key="cooling">冷却中</Menu.Item>
-          <Menu.Item key="done">己完成</Menu.Item>
-          <Menu.Item key="all">全部</Menu.Item>
-        </Menu>
-        <Button type="link" size="small" onClick={showSortModal}>
-          排序
-        </Button>
-        <Modal
-          visible={sortVisable}
-          title="排序"
-          onCancel={hideSortModal}
-          onOk={onSortSubmit}
-        >
-          <Form onFinish={onSortSubmit} form={sortForm}>
-            <Form.Item
-              name="sort"
-              label="排序关键字"
-              rules={[{ required: true }]}
-            >
-              <Radio.Group>
-                <Radio.Button value="reviewAt">复习时间</Radio.Button>
-                <Radio.Button value="createAt">添加时间</Radio.Button>
-                <Radio.Button value="exp">熟练度</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item
-              name="orderby"
-              label="排序方向"
-              rules={[{ required: true }]}
-            >
-              <Radio.Group>
-                <Radio.Button value="1">升序</Radio.Button>
-                <Radio.Button value="-1">降序</Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item>
-              <Button style={{ opacity: 0 }} htmlType="submit">
-                提交
-              </Button>
-            </Form.Item>
-            <Form.Item>
-              <Button type="dashed" danger onClick={onSortCancel}>
-                取消排序
-              </Button>
-            </Form.Item>
-          </Form>
-        </Modal>
-      </Header>
-      <Content className={styles['content']}>
+    <section>
+      <header style={{ height: 24 }}>
+        <div className={styles['header']}>
+          <Menu
+            className={styles.menu}
+            mode="horizontal"
+            onSelect={onMenuSelect}
+            selectedKeys={selectedKeys}
+          >
+            <Menu.Item key="enable">可复习</Menu.Item>
+            <Menu.Item key="cooling">冷却中</Menu.Item>
+            <Menu.Item key="done">己完成</Menu.Item>
+            <Menu.Item key="all">全部</Menu.Item>
+          </Menu>
+          <Button type="link" size="small" onClick={showSortModal}>
+            排序
+          </Button>
+          <Modal
+            visible={sortVisable}
+            title="排序"
+            onCancel={hideSortModal}
+            onOk={onSortSubmit}
+          >
+            <Form onFinish={onSortSubmit} form={sortForm}>
+              <Form.Item
+                name="sort"
+                label="排序关键字"
+                rules={[{ required: true }]}
+              >
+                <Radio.Group>
+                  <Radio.Button value="reviewAt">复习时间</Radio.Button>
+                  <Radio.Button value="createAt">添加时间</Radio.Button>
+                  <Radio.Button value="exp">熟练度</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item
+                name="orderby"
+                label="排序方向"
+                rules={[{ required: true }]}
+              >
+                <Radio.Group>
+                  <Radio.Button value="1">升序</Radio.Button>
+                  <Radio.Button value="-1">降序</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item>
+                <Button style={{ opacity: 0 }} htmlType="submit">
+                  提交
+                </Button>
+              </Form.Item>
+              <Form.Item>
+                <Button type="dashed" danger onClick={onSortCancel}>
+                  取消排序
+                </Button>
+              </Form.Item>
+            </Form>
+          </Modal>
+        </div>
+      </header>
+      <main className={styles['content']}>
         {pages?.length ? (
           <InfiniteLoader
             isRowLoaded={isItemLoaded}
@@ -389,59 +390,62 @@ export default () => {
             loadMoreRows={loadMoreItems}
           >
             {({ onRowsRendered, registerChild }) => (
-              <AutoSizer>
-                {(size) => (
+              <WindowScroller>
+                {({ registerChild: winRef, ...winProps }) => (
                   <List
-                    {...size}
+                    autoHeight
                     style={{ background: '#f0f2f5' }}
-                    ref={registerChild}
+                    {...winProps}
+                    ref={(ref) => registerChild(winRef(ref))}
                     rowCount={total}
                     onRowsRendered={onRowsRendered}
                     rowHeight={getRowHeight}
                     rowRenderer={renderItem}
                   />
                 )}
-              </AutoSizer>
+              </WindowScroller>
             )}
           </InfiniteLoader>
         ) : (
           <Empty className={styles['empty']} />
         )}
-      </Content>
-      <Footer className={styles['footer']}>
-        <Space style={{ marginRight: '12px' }}>
-          {selectedItems.length}/{total}
-          <Button size="small" type="dashed" onClick={cancelAllSelect}>
-            取消选择
-          </Button>
-          {/* <Button
+      </main>
+      <footer>
+        <div className={styles['footer']}>
+          <Space style={{ marginRight: '12px' }}>
+            {selectedItems.length}/{total}
+            <Button size="small" type="dashed" onClick={cancelAllSelect}>
+              取消选择
+            </Button>
+            {/* <Button
           size='small' danger>删除所选</Button> */}
-        </Space>
-        <Space>
-          <Button
-            size="small"
-            type="primary"
-            disabled={!selectedItems.length}
-            onClick={reviewHandler}
-          >
-            复习所选
-          </Button>
-          <Button size="small" type="primary" onClick={randomReviewHandler}>
-            随机复习
-          </Button>
-          <Button size="small" type="primary" onClick={reviewAllHandler}>
-            复习全部
-          </Button>
-          <Button
-            size="small"
-            type="primary"
-            shape="circle"
-            icon={<PlusOutlined />}
-            onClick={showInpurModal}
-            data-input-type="新建"
-          />
-        </Space>
-      </Footer>
+          </Space>
+          <Space>
+            <Button
+              size="small"
+              type="primary"
+              disabled={!selectedItems.length}
+              onClick={reviewHandler}
+            >
+              复习所选
+            </Button>
+            <Button size="small" type="primary" onClick={randomReviewHandler}>
+              随机复习
+            </Button>
+            <Button size="small" type="primary" onClick={reviewAllHandler}>
+              复习全部
+            </Button>
+            <Button
+              size="small"
+              type="primary"
+              shape="circle"
+              icon={<PlusOutlined />}
+              onClick={showInpurModal}
+              data-input-type="新建"
+            />
+          </Space>
+        </div>
+      </footer>
       <Modal
         title={inputType}
         visible={inputVisable}
@@ -466,6 +470,6 @@ export default () => {
           </Form.Item>
         </Form>
       </Modal>
-    </Layout>
+    </section>
   );
 };

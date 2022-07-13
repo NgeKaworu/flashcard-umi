@@ -312,9 +312,11 @@ export default () => {
   }
 
   return (
-    <Layout className={styles['layout']}>
-      <Header className={styles['header']}>{renderTitle()}</Header>
-      <Content className={styles['content']}>
+    <section>
+      <header style={{ height: 24 }}>
+        <div className={styles['header']}>{renderTitle()}</div>
+      </header>
+      <main className={styles['content']}>
         {datas?.length ? (
           <Form className={reviewStyles['form']} form={form}>
             <Form.Item className={reviewStyles['form-item']}>
@@ -345,23 +347,25 @@ export default () => {
         ) : (
           <Empty className={styles['empty']} />
         )}
-      </Content>
-      <Footer className={styles['footer']}>
-        <Space style={{ marginRight: '12px', whiteSpace: 'pre-wrap' }}>
-          余{total}
-        </Space>
-        <Space>
-          {renderNextBtn()}
-          <Button
-            size="small"
-            type="primary"
-            disabled={flag !== 'normal'}
-            onClick={submitHandler}
-          >
-            提交
-          </Button>
-        </Space>
-      </Footer>
-    </Layout>
+      </main>
+      <footer>
+        <div className={styles['footer']}>
+          <Space style={{ marginRight: '12px', whiteSpace: 'pre-wrap' }}>
+            余{total}
+          </Space>
+          <Space>
+            {renderNextBtn()}
+            <Button
+              size="small"
+              type="primary"
+              disabled={flag !== 'normal'}
+              onClick={submitHandler}
+            >
+              提交
+            </Button>
+          </Space>
+        </div>
+      </footer>
+    </section>
   );
 };

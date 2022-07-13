@@ -39,25 +39,27 @@ export default (props: PropsWithChildren<any>) => {
   return (
     <QueryClientProvider client={queyClient}>
       <ConfigProvider locale={zhCN}>
-        <Layout className={styles['layout']}>
-          <Content className={styles['content']}>{props.children}</Content>
-          <Footer className={styles['footer']}>
-            {menu.map((i) => (
-              <div
-                className={[
-                  styles?.['menu-item'],
-                  i.path.includes(pathname) && styles?.['active'],
-                ]?.join(' ')}
-                key={i.path}
-                data-path={i.path}
-                onClick={onMenuClick}
-              >
-                {i.icon}
-                {i.title}
-              </div>
-            ))}
-          </Footer>
-        </Layout>
+        <section className={styles['layout']}>
+          <main>{props.children}</main>
+          <footer>
+            <div className={styles['footer']}>
+              {menu.map((i) => (
+                <div
+                  className={[
+                    styles?.['menu-item'],
+                    i.path.includes(pathname) && styles?.['active'],
+                  ]?.join(' ')}
+                  key={i.path}
+                  data-path={i.path}
+                  onClick={onMenuClick}
+                >
+                  {i.icon}
+                  {i.title}
+                </div>
+              ))}
+            </div>
+          </footer>
+        </section>
       </ConfigProvider>
     </QueryClientProvider>
   );
